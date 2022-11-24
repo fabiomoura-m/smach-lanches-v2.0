@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Smach Lanches</title>
+</head>
+
+<body>
+    <div class="container">
+        <aside class="aside">
+            <div class="logo">
+                <img src="assets/images/logo.svg" alt="">
+            </div>
+            <div class="informational-data">
+                <span>Operador: Marilucia</span>
+                <span>Data-Hora: <span id="date"></span><span id="hour"></span></span>
+                <span>Versão: 1.0</span>
+            </div>
+        </aside>
+        <main class="main">
+            <section class="orders" id="orders">
+                <header class="header">
+                    <h1>Todos os pedidos</h1>
+                </header>
+                <button class="button-newOrder" id="btn-newOrder">
+                    <img src="assets/images/most.svg" alt="">
+                    Novo pedido
+                </button>
+                <div class="container-feedback" id="feedback-show-order">
+                    <span id="feedback-message"></span>
+                    <span id="close-feedback"><img src="assets/images/close.svg" alt=""></span>
+                </div>
+                <div class="container-filter" id="container-filter">
+                    <div>
+                        <label for="" class="label-filter">Filtrar por</label>
+                        <select name="" id="select-filter-type" class="select-filter">
+                            <option value="">Tipo</option>
+                            <option value="Delivery">Delivery</option>
+                            <option value="Salão">Salão</option>
+                        </select>
+                        <select name="" id="select-filter-status" class="select-filter">
+                            <option value="">Status</option>
+                            <option value="Recebido">Recebido</option>
+                            <option value="Pronto">Pronto</option>
+                            <option value="Entregue">Entregue</option>
+                        </select>
+                    </div>
+                    <button class="button-print" id="btn-print">
+                        <img src="assets/images/printer.svg" alt="">
+                        Imprimir
+                    </button>
+                </div>
+                <div class="buttons-edit" id="container-delete">
+                    <button class="btn-trash" id="btn-delete"><img src="/assets/images/trash.svg"
+                            alt="">Excluir</button>
+                </div>
+                <div class="table">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th width="20%">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="checkbox" id="select-all-orders">
+                                        <label for="select-all-orders" class="checkbox-label">Nº do pedido</label>
+                                    </div>
+                                </th>
+                                <th width="30%">Itens</th>
+                                <th>Tipo</th>
+                                <th width="15%">Valor</th>
+                                <th width="20%">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyOrders" class="tBodyOrders">
+                        </tbody>
+                    </table>
+                    <dialog id="dialog-delete" class="modal modal-delete">
+                        <div>
+                            <h2>Deseja realmente excluir o pedido?</h2>
+                            <div>
+                                <button id="btn-modal-confirm" class="close-modal confirm">Sim</button>
+                                <button id="btn-modal-cancel" class="close-modal cancel">Não</button>
+                            </div>
+                        </div>
+                    </dialog>
+                </div>
+                <div class="feedback-order" id="feedback-orders">
+                    <img src="/assets/images/bg-lanches.svg" alt="">
+                    <p>Não temos pedidos para mostrar</p>
+                </div>
+            </section>
+            <section class="new-order" id="new-order">
+                <header class="header">
+                    <h1>Novo pedido</h1>
+                </header>
+                <div class="filter-request">
+                    <p>Tipo de consumo</p>
+                    <div class="fields-request">
+                        <div class="field-request">
+                            <input type="radio" name="type-request" id="delivery" value="Delivery" checked>
+                            <label for="delivery">Delivery</label>
+                        </div>
+                        <div class="field-request">
+                            <input type="radio" name="type-request" id="hall" value="Salão">
+                            <label for="hall">Salão</label>
+                        </div>
+                    </div>
+                </div>
+                <form action="#" id="formOrder">
+                    <div class="search-product">
+                        <label for="">Buscar produto</label>
+                        <div class="search-product-fields">
+                            <input type="text" placeholder="código do produto" id="codeProduct">
+                            <button class="button-search" id="btn-search">
+                                <img src="/assets/images/search.svg" alt="">
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="container-fields">
+                        <div class="field-amount">
+                            <label for="">Quantidade</label>
+                            <input type="number" placeholder="0" id="amountProduct" min="1">
+                        </div>
+                        <div class="field-product">
+                            <label for="">Produto</label>
+                            <input type="text" placeholder="Nome do produto" id="nameProduct" readonly>
+                        </div>
+                        <div class="field-price">
+                            <label for="">Preço</label>
+                            <input type="text" placeholder="R$ 0,00" id="priceProduct" readonly>
+                        </div>
+                    </div>
+                    <button class="button-addProduct" id="btn-addProduct" disabled>
+                        <img src="/assets/images/most.svg" alt="">
+                        Adicionar produto
+                    </button>
+                </form>
+                <div class="table">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th width="50%">Produto</th>
+                                <th>Quantidade</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyProduct" class="tBodyProduct">
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="feedback-order" id="feedback-order">
+                    <img src="/assets/images/bg-lanches.svg" alt="">
+                    <p>Não temos pedidos para mostrar</p>
+                </div>
+                <div class="container-set-save" id="container-set-save">
+                    <div class="total-order" id="total-order">
+                        <span id="total-amount-order"></span>
+                    </div>
+                    <div>
+                        <button class="button-cancel" id="btn-cancel">Cancelar</button>
+                        <button class="button-save" id="btn-save" disabled>Salvar pedido</button>
+                    </div>
+                </div>
+                <dialog id="dialog-order" class="modal">
+                    <div>
+                        <h2>Código do produto não encontrado!</h2>
+                        <button id="btn-close-modal-order" class="close-modal"><img src="assets/images/close.svg"
+                                alt=""></button>
+                    </div>
+                </dialog>
+            </section>
+        </main>
+    </div>
+    <footer class="footer">
+        Copyright © 2022 M & M Technologies - Todos os direitos reservados
+    </footer>
+
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
