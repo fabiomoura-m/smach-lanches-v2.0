@@ -46,6 +46,10 @@ const buttonConfirmDelete = document.getElementById('btn-modal-confirm');
 const date = document.getElementById('date');
 const time = document.getElementById('hour');
 
+const sectionProducts = document.getElementById('products');
+const linkOrder = document.getElementById('order');
+const linkProduct = document.getElementById('product');
+
 let productFound = {};
 let arrayOrder = [];
 let arrayOrders = [];
@@ -54,9 +58,25 @@ let arrayFilteredByStatus = [];
 let numberOrder = 1000;
 let checkedAll = false;
 
-function changeSection() {
-    sectionOrder.style.display = 'none';
-    sectionNewOrder.style.display = 'flex';
+function changeSection(e) {
+    if (e.target.id == 'btn-newOrder') {
+        sectionOrder.style.display = 'none';
+        sectionNewOrder.style.display = 'flex';
+    }
+    if (e.target.id == 'order') {
+        linkProduct.removeAttribute('class');
+        linkOrder.setAttribute('class', 'active');
+        sectionNewOrder.style.display = 'none';
+        sectionProducts.style.display = 'none';
+        sectionOrder.style.display = 'block';
+    }
+    if (e.target.id == 'product') {
+        linkOrder.removeAttribute('class');
+        linkProduct.setAttribute('class', 'active');
+        sectionNewOrder.style.display = 'none';
+        sectionOrder.style.display = 'none';
+        sectionProducts.style.display = 'block';
+    }
 }
 
 function searchProduct(e) {
@@ -539,7 +559,14 @@ function cancelDeleteOrder() {
     modalDelete.close();
 }
 
-buttonAddNewOrder.addEventListener('click', changeSection);
+function changeSectionOrderandProduct() {
+    if (sectionOrder.style.display == 'none') {
+        sectionOrder.style.display == 'flex';
+    } else if (sectionProducts.style.display == 'none') {
+    }
+}
+
+buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductOnTable);
 buttonCancelOrder.addEventListener('click', cancelOrder);
@@ -553,3 +580,6 @@ buttonPrint.addEventListener('click', printOrders);
 buttonCloseFeedback.addEventListener('click', closeFeedback);
 buttonCloseModal.addEventListener('click', closeModal);
 buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
+
+linkOrder.addEventListener('click', e => changeSection(e));
+linkProduct.addEventListener('click', e => changeSection(e));
