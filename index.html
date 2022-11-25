@@ -22,8 +22,8 @@
                 <img src="assets/images/logo.svg" alt="">
             </div>
             <nav class="nav">
-                <a href="#pedidos" id="pedidos">Pedidos</a>
-                <a href="#produtos" id="produtos">Produtos</a>
+                <a href="#order" id="order">Pedidos</a>
+                <a href="#product" id="product">Produtos</a>
             </nav>
             <div class="informational-data">
                 <span>Operador: Marilucia</span>
@@ -184,6 +184,46 @@
                                 alt=""></button>
                     </div>
                 </dialog>
+            </section>
+            <section class="products" id="products">
+                <header class="header">
+                    <h1>Todos os produtos</h1>
+                </header>
+                <form action="#">
+                    <div class="container-fields">
+                        <div class="field-code">
+                            <label for="">Cód.produto</label>
+                            <input type="number" placeholder="0" id="codeProduct" min="1">
+                        </div>
+                        <div class="field-product">
+                            <label for="">Produto</label>
+                            <input type="text" placeholder="Nome do produto" id="nameProduct" readonly>
+                        </div>
+                        <div class="field-price">
+                            <label for="">Preço</label>
+                            <input type="text" placeholder="R$ 00,00" id="priceProduct" readonly>
+                        </div>
+                    </div>
+                    <button class="button-addProduct" id="btn-addProduct" disabled>
+                        <img src="/assets/images/most.svg" alt="">
+                        Salvar produto
+                    </button>
+                </form>
+                <div class="table">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Cód.produto</th>
+                                <th width="50%">Nome</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyProduct" class="tBodyProduct">
+
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </main>
     </div>

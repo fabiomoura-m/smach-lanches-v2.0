@@ -150,7 +150,6 @@ main {
 }
 
 .aside .nav a {
-    display: block;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -163,15 +162,16 @@ main {
     line-height: 22px;
     border-top: 1px solid var(--color-neutral-200);
     position: relative;
+    user-select: none;
+}
+.aside .nav a.active {
+    background-color: var(--color-primary-200);
+    color: var(--color-primary);
 }
 .aside .nav a:last-child {
     border-bottom: 1px solid var(--color-neutral-200);
 }
-.aside .nav a:target {
-    background-color: var(--color-primary-200);
-    color: var(--color-primary);
-}
-.aside .nav a:target::before {
+.aside .nav a.active::before {
     position: absolute;
     content: '';
     width: 8px;
@@ -348,7 +348,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 48px;
+    margin-top: 40px;
 }
 
 .feedback-order p {
@@ -427,6 +427,14 @@ main {
 }
 .container-feedback span:last-child:hover {
     background: #00eb34;
+}
+
+/* ----------------------------- */
+/* ------ SECTION PRODUCTS ----- */
+/* ----------------------------- */
+
+.products {
+    display: none;
 }
 
 /* ----------------------------- */
@@ -540,12 +548,14 @@ form .search-product input {
     margin-bottom: 16px;
 }
 
-.field-amount {
+.field-amount,
+.field-code {
     max-width: 136px;
     width: 100%;
 }
 
-.field-amount input {
+.field-amount input,
+.field-code input {
     width: 100%;
 }
 
