@@ -50,6 +50,13 @@ const sectionProducts = document.getElementById('products');
 const linkOrder = document.getElementById('order');
 const linkProduct = document.getElementById('product');
 
+const fieldCodeNewProduct = document.getElementById('codeNewProduct');
+const fieldNameNewProduct = document.getElementById('nameNewProduct');
+const fieldPriceNewProduct = document.getElementById('priceNewProduct');
+const buttonCancelNewProduct = document.getElementById('btn-cancelNewProduct');
+const buttonSaveNewProduct = document.getElementById('btn-addNewProduct');
+const inputsSectionNewProduct = document.querySelectorAll('.input-newProduct');
+
 let productFound = {};
 let arrayOrder = [];
 let arrayOrders = [];
@@ -564,6 +571,18 @@ function changeSectionOrderandProduct() {
         sectionOrder.style.display == 'flex';
     } else if (sectionProducts.style.display == 'none') {
     }
+}
+
+function checkInputs(inputs) {
+    let filled = true;
+
+    inputs.forEach(function (input) {
+        if (input.value === '') {
+            filled = false;
+        }
+    });
+
+    return filled;
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));

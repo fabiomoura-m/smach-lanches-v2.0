@@ -447,6 +447,7 @@ main {
 }
 .button-cancelNewProduct {
     border: none;
+    display: none;
 }
 
 /* ----------------------------- */
