@@ -193,21 +193,28 @@
                     <div class="container-fields">
                         <div class="field-code">
                             <label for="">Cód.produto</label>
-                            <input type="number" placeholder="0" id="codeProduct" min="1">
+                            <input type="number" placeholder="0" id="codeNewProduct" min="1">
                         </div>
                         <div class="field-product">
                             <label for="">Produto</label>
-                            <input type="text" placeholder="Nome do produto" id="nameProduct" readonly>
+                            <input type="text" placeholder="Nome do produto" id="nameNewProduct">
                         </div>
                         <div class="field-price">
                             <label for="">Preço</label>
-                            <input type="text" placeholder="R$ 00,00" id="priceProduct" readonly>
+                            <input type="number" placeholder="R$ 00,00" id="priceNewProduct">
                         </div>
                     </div>
-                    <button class="button-addProduct" id="btn-addProduct" disabled>
-                        <img src="/assets/images/most.svg" alt="">
-                        Salvar produto
-                    </button>
+                    <div class="container-buttons">
+                        <button class="button-cancelNewProduct" id="btn-addNewProduct">
+                            <img src="/assets/images/close-new-product.svg" alt="">
+                            Cancelar
+                        </button>
+                        <button class="button-addNewProduct" id="btn-addNewProduct" disabled>
+                            <img src="/assets/images/most.svg" alt="">
+                            Salvar produto
+                        </button>
+                    </div>
+
                 </form>
                 <div class="table">
                     <table class="order-table">

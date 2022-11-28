@@ -262,7 +262,8 @@ main {
 }
 
 .button-print,
-.btn-trash {
+.btn-trash,
+.button-cancelNewProduct {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -274,7 +275,8 @@ main {
 }
 
 .button-print:hover,
-.btn-trash:hover {
+.btn-trash:hover,
+.button-cancelNewProduct:hover {
     background-color: var(--color-primary-200);
 }
 
@@ -437,6 +439,16 @@ main {
     display: none;
 }
 
+.container-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+.button-cancelNewProduct {
+    border: none;
+}
+
 /* ----------------------------- */
 /* ----- SECTION NEW ORDER ----- */
 /* ----------------------------- */
@@ -576,7 +588,8 @@ form .search-product input {
     width: 100%;
 }
 
-.button-addProduct {
+.button-addProduct,
+.button-addNewProduct {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -586,12 +599,18 @@ form .search-product input {
     margin-left: auto;
     transition: 0.3s;
 }
-.button-addProduct:disabled {
+.button-addNewProduct {
+    margin-left: inherit;
+}
+
+.button-addProduct:disabled,
+.button-addNewProduct:disabled {
     background: var(--color-neutral-200);
     color: var(--color-white);
     cursor: not-allowed;
 }
-.button-addProduct:not(:disabled):hover {
+.button-addProduct:not(:disabled):hover,
+.button-addNewProduct:not(:disabled):hover {
     background: var(--color-primary-700);
 }
 
