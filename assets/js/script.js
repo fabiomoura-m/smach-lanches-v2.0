@@ -56,6 +56,7 @@ const fieldPriceNewProduct = document.getElementById('priceNewProduct');
 const buttonCancelNewProduct = document.getElementById('btn-cancelNewProduct');
 const buttonSaveNewProduct = document.getElementById('btn-addNewProduct');
 const inputsSectionNewProduct = document.querySelectorAll('.input-newProduct');
+const formNewProduct = document.getElementById('form-newProduct');
 
 let productFound = {};
 let arrayOrder = [];
@@ -596,6 +597,13 @@ function activeButtonsNewProduct() {
     });
 }
 
+function cancelNewProduct(e) {
+    e.preventDefault();
+    formNewProduct.reset();
+    buttonCancelNewProduct.style.display = 'none';
+    buttonSaveNewProduct.disabled = true;
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductOnTable);
@@ -610,6 +618,7 @@ buttonPrint.addEventListener('click', printOrders);
 buttonCloseFeedback.addEventListener('click', closeFeedback);
 buttonCloseModal.addEventListener('click', closeModal);
 buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
+buttonCancelNewProduct.addEventListener('click', cancelNewProduct);
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
