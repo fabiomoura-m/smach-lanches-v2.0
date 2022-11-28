@@ -541,7 +541,6 @@ function showCurrentDate() {
 
     date.innerHTML = dateFormatted;
 }
-showCurrentDate();
 
 function ShowCurrentTime() {
     let currentDate = new Date();
@@ -551,8 +550,6 @@ function ShowCurrentTime() {
 
     time.innerHTML = `- ${fixZero(hour)}:${fixZero(minute)}:${fixZero(second)}`;
 }
-ShowCurrentTime();
-setInterval(ShowCurrentTime, 1000);
 
 function fixZero(time) {
     return time < 10 ? `0${time}` : time;
@@ -585,6 +582,20 @@ function checkInputs(inputs) {
     return filled;
 }
 
+function activeButtonsNewProduct() {
+    inputsSectionNewProduct.forEach(input => {
+        input.addEventListener('keyup', () => {
+            if (checkInputs(inputsSectionNewProduct)) {
+                buttonSaveNewProduct.disabled = false;
+                buttonCancelNewProduct.style.display = 'flex';
+            } else {
+                buttonSaveNewProduct.disabled = true;
+                buttonCancelNewProduct.style.display = 'none';
+            }
+        });
+    });
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductOnTable);
@@ -602,3 +613,9 @@ buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
+window.addEventListener('load', () => {
+    showCurrentDate();
+    activeButtonsNewProduct();
+    ShowCurrentTime();
+    setInterval(ShowCurrentTime, 1000);
+});
