@@ -43,9 +43,9 @@ const feedbackOrders = document.getElementById('feedback-show-order');
 const messageFeedback = document.getElementById('feedback-message');
 const buttonCloseFeedback = document.getElementById('close-feedback');
 
-const modal = document.getElementById('dialog-order');
+const modalOrder = document.getElementById('dialog-order');
 const buttonCloseModal = document.getElementById('btn-close-modal-order');
-const modalDelete = document.getElementById('dialog-delete');
+const modalDeleteOrder = document.getElementById('dialog-delete');
 const buttonCancelDelete = document.getElementById('btn-modal-cancel');
 const buttonConfirmDelete = document.getElementById('btn-modal-confirm');
 
@@ -116,7 +116,7 @@ function searchProduct(e) {
         fieldPriceProduct.value = '';
         fieldAmountProduct.value = 0;
         buttonAddProduct.setAttribute('disabled', 'true');
-        modal.showModal();
+        modalOrder.showModal();
     }
 }
 
@@ -399,7 +399,7 @@ function deleteOrder() {
     const messageModal = document.querySelector('#dialog-delete > div h2');
     messageModal.textContent = message;
 
-    modalDelete.showModal();
+    modalDeleteOrder.showModal();
 
     buttonConfirmDelete.onclick = () => {
         const checkboxTHead = document.getElementById('select-all-orders');
@@ -445,7 +445,7 @@ function deleteOrder() {
             }, 200);
         }, 5000);
 
-        modalDelete.close();
+        modalDeleteOrder.close();
     };
 }
 
@@ -573,14 +573,6 @@ function fixZero(time) {
     return time < 10 ? `0${time}` : time;
 }
 
-function closeModal() {
-    modal.close();
-}
-
-function cancelDeleteOrder() {
-    modalDelete.close();
-}
-
 function changeSectionOrderandProduct() {
     if (sectionOrder.style.display == 'none') {
         sectionOrder.style.display == 'flex';
@@ -699,8 +691,9 @@ async function removeProduct(code, name) {
         }
     };
 }
-function cancelDeleteProduct() {
-    modalConfirmDeleteProduct.close();
+
+function closeModals(modal) {
+    modal.close();
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
@@ -715,11 +708,17 @@ selectChangeType.addEventListener('change', filterOrdersByType);
 selectChangeStatus.addEventListener('change', filterOrdersByStatus);
 buttonPrint.addEventListener('click', printOrders);
 buttonCloseFeedback.addEventListener('click', closeFeedback);
-buttonCloseModal.addEventListener('click', closeModal);
-buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
+buttonCloseModal.addEventListener('click', () => {
+    closeModals(modalOrder);
+});
+buttonCancelDelete.addEventListener('click', () => {
+    closeModals(modalDeleteOrder);
+});
 buttonCancelNewProduct.addEventListener('click', cancelNewProduct);
 buttonSaveNewProduct.addEventListener('click', saveNewProduct);
-btnCancelDeleteProduct.addEventListener('click', cancelDeleteProduct);
+btnCancelDeleteProduct.addEventListener('click', () => {
+    closeModals(modalConfirmDeleteProduct);
+});
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
