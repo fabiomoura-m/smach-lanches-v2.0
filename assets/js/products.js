@@ -1,4 +1,4 @@
-let productList = [
+export const productList = [
     {
         code: 1001,
         productName: 'Super SMACH COMBO Programado - Hambúrguer + fritas',

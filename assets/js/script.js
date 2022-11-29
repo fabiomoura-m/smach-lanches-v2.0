@@ -1,3 +1,8 @@
+import Product from './models/product.js';
+import ProductServices from './services/product-service.js';
+
+const productService = new ProductServices();
+
 const buttonSearchProduct = document.getElementById('btn-search');
 const fieldSearchProduct = document.getElementById('codeProduct');
 const fieldNameProduct = document.getElementById('nameProduct');
@@ -278,10 +283,23 @@ function showOrder(order) {
     tbodyOrders.innerHTML += trTds;
 }
 
+function changeOrderStatus(orderNumber) {
+    arrayOrders = arrayOrders.map(order => {
+        if (order.number == orderNumber) {
+            if (order.status == 'Recebido') {
+                order.status = 'Pronto';
+            } else if (order.status == 'Pronto') {
+                order.status = 'Entregue';
+            }
+        }
+        return order;
+    });
+    updateAllOrders();
+}
+
 function updateAllOrders(array = arrayOrders) {
-    let trTds = '';
-    array.forEach(order => {
-        trTds += `
+    array.forEach((order, index) => {
+        let trTds = `
         <tr>
             <td>
                 <div class="checkbox-wrapper">
@@ -300,33 +318,22 @@ function updateAllOrders(array = arrayOrders) {
             </td>
             <td>${order.type}</td>
             <td>${formatPrice(order.price)}</td>
-            <td><button class="button-order-status ${
-                order.status == 'Recebido'
-                    ? ''
-                    : order.status === 'Pronto'
-                    ? 'ready'
-                    : 'delivered'
-            }" onclick="changeOrderStatus(${order.number})">${
-            order.status
-        }</button></td>
+            <td><button id="bt-trocaStatus-${index}" class="button-order-status  ${
+            order.status == 'Recebido'
+                ? ''
+                : order.status === 'Pronto'
+                ? 'ready'
+                : 'delivered'
+        }">${order.status}</button></td>
         </tr>`;
+        tbodyOrders.innerHTML += trTds;
+        document
+            .getElementById(`bt-trocaStatus-${index}`)
+            .addEventListener('click', () => {
+                // changeOrderStatus(order.number);
+                console.log(order);
+            });
     });
-
-    tbodyOrders.innerHTML = trTds;
-}
-
-function changeOrderStatus(orderNumber) {
-    arrayOrders = arrayOrders.map(order => {
-        if (order.number == orderNumber) {
-            if (order.status == 'Recebido') {
-                order.status = 'Pronto';
-            } else if (order.status == 'Pronto') {
-                order.status = 'Entregue';
-            }
-        }
-        return order;
-    });
-    updateAllOrders();
 }
 
 function showButtonDelete(checked = false) {
@@ -604,6 +611,22 @@ function cancelNewProduct(e) {
     buttonSaveNewProduct.disabled = true;
 }
 
+async function saveNewProduct(e) {
+    e.preventDefault();
+
+    const idProduct = fieldCodeNewProduct.value;
+    const nameProduct = fieldNameNewProduct.value;
+    const priceProduct = fieldPriceNewProduct.value;
+    const product = new Product(idProduct, nameProduct, priceProduct);
+
+    try {
+        let response = await productService.saveProduct(product);
+        console.log(response);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductOnTable);
@@ -619,6 +642,7 @@ buttonCloseFeedback.addEventListener('click', closeFeedback);
 buttonCloseModal.addEventListener('click', closeModal);
 buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
 buttonCancelNewProduct.addEventListener('click', cancelNewProduct);
+buttonSaveNewProduct.addEventListener('click', saveNewProduct);
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
