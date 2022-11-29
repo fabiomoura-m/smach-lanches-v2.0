@@ -450,6 +450,20 @@ main {
     display: none;
 }
 
+.actionButtons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 1rem;
+}
+.actionButtons img {
+    cursor: pointer;
+}
+.actionButtons img:hover {
+    filter: invert(58%) sepia(69%) saturate(1227%) hue-rotate(344deg)
+        brightness(101%) contrast(101%);
+}
+
 /* ----------------------------- */
 /* ----- SECTION NEW ORDER ----- */
 /* ----------------------------- */
