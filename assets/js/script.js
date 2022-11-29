@@ -653,6 +653,8 @@ function tableRenderProduct(code, name, price) {
     tdName.textContent = name;
     tdPrice.textContent = formatPrice(Number(price));
 
+    removeButton.addEventListener('click', () => removeProduct(code));
+
     tr.appendChild(tdCode);
     tr.appendChild(tdName);
     tr.appendChild(tdPrice);
@@ -669,6 +671,16 @@ async function tableRenderAllProducts() {
     products.forEach(product => {
         tableRenderProduct(product.id, product.nome, product.preco);
     });
+}
+
+async function removeProduct(code) {
+    try {
+        await productService.deleteProduct(code);
+
+        tableRenderAllProducts();
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));

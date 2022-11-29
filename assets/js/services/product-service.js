@@ -56,7 +56,7 @@ export default class ProductServices {
             method: 'POST'
         });
         if (response.ok) {
-            console.log(response.message);
+            console.log(await response.text());
         } else {
             return console.log(response);
         }
