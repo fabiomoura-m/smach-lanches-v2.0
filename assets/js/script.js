@@ -661,6 +661,16 @@ function tableRenderProduct(code, name, price) {
     tableBodyNewProducts.appendChild(tr);
 }
 
+async function tableRenderAllProducts() {
+    tableBodyNewProducts.innerHTML = '';
+
+    let products = await productService.getAllProducts();
+
+    products.forEach(product => {
+        tableRenderProduct(product.id, product.nome, product.preco);
+    });
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductOnTable);
@@ -684,5 +694,6 @@ window.addEventListener('load', () => {
     showCurrentDate();
     activeButtonsNewProduct();
     ShowCurrentTime();
+    tableRenderAllProducts();
     setInterval(ShowCurrentTime, 1000);
 });
