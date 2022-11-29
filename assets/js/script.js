@@ -65,6 +65,13 @@ const inputsSectionNewProduct = document.querySelectorAll('.input-newProduct');
 const formNewProduct = document.getElementById('form-newProduct');
 
 const tableBodyNewProducts = document.getElementById('tBodyNewProduct');
+const modalConfirmDeleteProduct = document.getElementById('dialog-product');
+const btnConfirmDeleteProduct = document.getElementById(
+    'btn-modal-confirmProduct'
+);
+const btnCancelDeleteProduct = document.getElementById(
+    'btn-modal-cancelProduct'
+);
 
 let productFound = {};
 let arrayOrder = [];
@@ -653,7 +660,7 @@ function tableRenderProduct(code, name, price) {
     tdName.textContent = name;
     tdPrice.textContent = formatPrice(Number(price));
 
-    removeButton.addEventListener('click', () => removeProduct(code));
+    removeButton.addEventListener('click', () => removeProduct(code, name));
 
     tr.appendChild(tdCode);
     tr.appendChild(tdName);
@@ -673,14 +680,27 @@ async function tableRenderAllProducts() {
     });
 }
 
-async function removeProduct(code) {
-    try {
-        await productService.deleteProduct(code);
+async function removeProduct(code, name) {
+    modalConfirmDeleteProduct.showModal();
 
-        tableRenderAllProducts();
-    } catch (err) {
-        console.log(err);
-    }
+    const productNameModal = document.getElementById('modal-productName');
+
+    productNameModal.innerHTML = name;
+
+    btnConfirmDeleteProduct.onclick = async () => {
+        try {
+            await productService.deleteProduct(code);
+
+            tableRenderAllProducts();
+            modalConfirmDeleteProduct.close();
+        } catch (err) {
+            console.log(err);
+            modalConfirmDeleteProduct.close();
+        }
+    };
+}
+function cancelDeleteProduct() {
+    modalConfirmDeleteProduct.close();
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
@@ -699,6 +719,7 @@ buttonCloseModal.addEventListener('click', closeModal);
 buttonCancelDelete.addEventListener('click', cancelDeleteOrder);
 buttonCancelNewProduct.addEventListener('click', cancelNewProduct);
 buttonSaveNewProduct.addEventListener('click', saveNewProduct);
+btnCancelDeleteProduct.addEventListener('click', cancelDeleteProduct);
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));

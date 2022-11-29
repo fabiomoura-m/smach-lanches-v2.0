@@ -105,7 +105,7 @@ main {
 .modal .close-modal:hover {
     background-color: var(--color-status-danger-300);
 }
-.modal img {
+.modal .modal-order-close {
     filter: invert(65%) sepia(50%) saturate(3005%) hue-rotate(344deg)
         brightness(102%) contrast(101%);
 }
@@ -263,7 +263,8 @@ main {
 
 .button-print,
 .btn-trash,
-.button-cancelNewProduct {
+.button-cancelNewProduct,
+.button-cancelAddNewProduct {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,7 +277,8 @@ main {
 
 .button-print:hover,
 .btn-trash:hover,
-.button-cancelNewProduct:hover {
+.button-cancelNewProduct:hover,
+.button-cancelAddNewProduct:hover {
     background-color: var(--color-primary-200);
 }
 
@@ -464,6 +466,32 @@ main {
         brightness(101%) contrast(101%);
 }
 
+#dialog-product > div {
+    display: flex;
+    flex-direction: column;
+}
+#dialog-product h2 {
+    font-family: 'Barlow';
+    font-size: 28px;
+    line-height: 79%;
+    color: var(--color-neutral);
+}
+#dialog-product p {
+    font-family: 'Inter';
+    font-size: 18px;
+    line-height: 79%;
+    color: var(--color-neutral-700);
+    margin-block: 24px;
+    min-width: 242px;
+    background-color: rgba(179, 179, 179, 0.2);
+    padding: 13px 36px;
+    border-radius: 8px;
+    text-align: center;
+}
+#dialog-product .button-cancelAddNewProduct {
+    border: none;
+}
+
 /* ----------------------------- */
 /* ----- SECTION NEW ORDER ----- */
 /* ----------------------------- */
@@ -604,7 +632,8 @@ form .search-product input {
 }
 
 .button-addProduct,
-.button-addNewProduct {
+.button-addNewProduct,
+.button-confirmAddNewProduct {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -625,7 +654,8 @@ form .search-product input {
     cursor: not-allowed;
 }
 .button-addProduct:not(:disabled):hover,
-.button-addNewProduct:not(:disabled):hover {
+.button-addNewProduct:not(:disabled):hover,
+.button-confirmAddNewProduct:hover {
     background: var(--color-primary-700);
 }
 

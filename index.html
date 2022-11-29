@@ -180,8 +180,8 @@
                 <dialog id="dialog-order" class="modal">
                     <div>
                         <h2>Código do produto não encontrado!</h2>
-                        <button id="btn-close-modal-order" class="close-modal"><img src="assets/images/close.svg"
-                                alt=""></button>
+                        <button id="btn-close-modal-order" class="close-modal"><img class="modal-order-close"
+                                src="assets/images/close.svg" alt=""></button>
                     </div>
                 </dialog>
             </section>
@@ -232,6 +232,22 @@
                         </tbody>
                     </table>
                 </div>
+                <dialog id="dialog-product" class="modal">
+                    <div>
+                        <h2>Quer mesmo excluir o produto?</h2>
+                        <p id="modal-productName"></p>
+                        <div>
+                            <button class="button-cancelAddNewProduct" id="btn-modal-cancelProduct">
+                                <img src="/assets/images/close-new-product.svg" alt="">
+                                Não, cancelar
+                            </button>
+                            <button class="button-confirmAddNewProduct" id="btn-modal-confirmProduct">
+                                <img src="/assets/images/most.svg" alt="">
+                                Sim, excluir
+                            </button>
+                        </div>
+                    </div>
+                </dialog>
             </section>
         </main>
     </div>
