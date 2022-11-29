@@ -1,3 +1,4 @@
+import { productList } from './products.js';
 import Product from './models/product.js';
 import ProductServices from './services/product-service.js';
 
@@ -62,6 +63,8 @@ const buttonCancelNewProduct = document.getElementById('btn-cancelNewProduct');
 const buttonSaveNewProduct = document.getElementById('btn-addNewProduct');
 const inputsSectionNewProduct = document.querySelectorAll('.input-newProduct');
 const formNewProduct = document.getElementById('form-newProduct');
+
+const tableBodyNewProducts = document.getElementById('tBodyNewProduct');
 
 let productFound = {};
 let arrayOrder = [];
@@ -622,9 +625,40 @@ async function saveNewProduct(e) {
     try {
         let response = await productService.saveProduct(product);
         console.log(response);
+        tableRenderProduct(idProduct, nameProduct, priceProduct);
+        cancelNewProduct(e);
     } catch (error) {
         console.log(error.message);
     }
+}
+
+function tableRenderProduct(code, name, price) {
+    const tr = document.createElement('tr');
+    const tdCode = document.createElement('td');
+    const tdName = document.createElement('td');
+    const tdPrice = document.createElement('td');
+    const tdAction = document.createElement('td');
+    const removeButton = document.createElement('img');
+    const editButton = document.createElement('img');
+
+    removeButton.setAttribute('class', 'removeButton');
+    removeButton.src = 'assets/images/trash-product.svg';
+    editButton.setAttribute('class', 'editButton');
+    editButton.src = 'assets/images/edit-product.svg';
+    tdAction.setAttribute('class', 'actionButtons');
+    tdAction.appendChild(editButton);
+    tdAction.appendChild(removeButton);
+
+    tdCode.textContent = code;
+    tdName.textContent = name;
+    tdPrice.textContent = formatPrice(Number(price));
+
+    tr.appendChild(tdCode);
+    tr.appendChild(tdName);
+    tr.appendChild(tdPrice);
+    tr.appendChild(tdAction);
+
+    tableBodyNewProducts.appendChild(tr);
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
