@@ -73,7 +73,6 @@ const btnCancelDeleteProduct = document.getElementById(
     'btn-modal-cancelProduct'
 );
 
-let codeListProduct = [];
 let currentOperation = 'saveProduct';
 
 let productFound = {};
@@ -609,12 +608,14 @@ function activeButtonsNewProduct() {
     });
 }
 
-function cancelNewProduct() {
-    formNewProduct.reset();
+async function cancelNewProduct() {
+    fieldNameNewProduct.value = '';
+    fieldPriceNewProduct.value = '';
     buttonCancelNewProduct.style.display = 'none';
     fieldCodeNewProduct.removeAttribute('disabled');
     buttonSaveNewProduct.disabled = true;
     currentOperation = 'saveProduct';
+    await tableRenderAllProducts();
 }
 
 async function saveNewProduct() {
@@ -626,7 +627,7 @@ async function saveNewProduct() {
     try {
         let response = await productService.saveProduct(product);
         console.log(response);
-        tableRenderAllProducts();
+        await tableRenderAllProducts();
         cancelNewProduct();
     } catch (error) {
         console.log(error.message);
@@ -673,13 +674,14 @@ async function tableRenderAllProducts() {
 
     let products = await productService.getAllProducts();
 
-    let firstProduct = products[products.length - 1]?.id || 999;
+    let productsOrderByCode = products.sort((a, b) => {
+        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    });
 
-    codeListProduct = [];
+    let firstProduct = productsOrderByCode[products.length - 1]?.id || 999;
 
-    products.reverse().forEach(product => {
+    productsOrderByCode.reverse().forEach(product => {
         tableRenderProduct(product.id, product.nome, product.preco);
-        codeListProduct.push(product.id);
     });
 
     fieldCodeNewProduct.value = firstProduct + 1;
@@ -725,8 +727,8 @@ async function updateProduct(code) {
 
     await productService.updateProduct(code, newProduct);
 
+    await tableRenderAllProducts();
     cancelNewProduct();
-    return await tableRenderAllProducts();
 }
 
 function closeModals(modal) {
@@ -759,12 +761,8 @@ buttonSaveNewProduct.addEventListener('click', e => {
     e.preventDefault();
     const idProduct = fieldCodeNewProduct.value;
 
-    let editOperation = codeListProduct.find(code => code == idProduct);
-
-    if (editOperation && currentOperation == 'editProduct') {
+    if (currentOperation == 'editProduct') {
         updateProduct(idProduct);
-    } else if (editOperation && currentOperation == 'saveProduct') {
-        alert('produto já cadastrado');
     } else {
         saveNewProduct();
     }
