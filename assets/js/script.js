@@ -75,7 +75,6 @@ const btnCancelDeleteProduct = document.getElementById(
 
 let currentOperation = 'saveProduct';
 
-let productFound = {};
 let arrayOrder = [];
 let arrayOrders = [];
 let arrayFilteredByType = [];
@@ -104,21 +103,23 @@ function changeSection(e) {
     }
 }
 
-function searchProduct(e) {
+async function searchProduct(e) {
     e.preventDefault();
     const codeProduct = fieldSearchProduct.value;
-    productFound = productList.find(product => codeProduct == product.code);
-    if (productFound !== undefined) {
-        fieldNameProduct.value = productFound.productName;
-        fieldPriceProduct.value = formatPrice(productFound.price);
-        fieldAmountProduct.value = 1;
-        buttonAddProduct.removeAttribute('disabled');
-    } else {
-        fieldNameProduct.value = '';
-        fieldPriceProduct.value = '';
-        fieldAmountProduct.value = 0;
-        buttonAddProduct.setAttribute('disabled', 'true');
-        modalOrder.showModal();
+    if (codeProduct) {
+        let productFound = await productService.getProductForId(codeProduct);
+        if (productFound !== undefined) {
+            fieldNameProduct.value = productFound[0].nome;
+            fieldPriceProduct.value = formatPrice(productFound[0].preco);
+            fieldAmountProduct.value = 1;
+            buttonAddProduct.removeAttribute('disabled');
+        } else {
+            fieldNameProduct.value = '';
+            fieldPriceProduct.value = '';
+            fieldAmountProduct.value = 0;
+            buttonAddProduct.setAttribute('disabled', 'true');
+            modalOrder.showModal();
+        }
     }
 }
 

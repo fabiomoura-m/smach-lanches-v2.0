@@ -15,7 +15,7 @@ export default class ProductServices {
             let product = await response.json();
             return product;
         } else {
-            console.log(await response.text());
+            await response.text();
         }
     }
 
