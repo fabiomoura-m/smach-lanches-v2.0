@@ -653,8 +653,7 @@ async function saveNewProduct() {
     const product = new Product(idProduct, nameProduct, priceProduct);
 
     try {
-        let response = await productService.saveProduct(product);
-        console.log(response);
+        await productService.saveProduct(product);
         await tableRenderAllProducts();
         feedbackMessage(`O produto ${idProduct} foi criado.`);
         cancelNewProduct();
@@ -728,9 +727,10 @@ async function removeProduct(code, name) {
             await productService.deleteProduct(code);
 
             tableRenderAllProducts();
+            feedbackMessage(`Produto ${code} removido com sucesso.`);
             modalConfirmDeleteProduct.close();
         } catch (err) {
-            console.log(err);
+            feedbackMessage(`${err}.`);
             modalConfirmDeleteProduct.close();
         }
     };
@@ -754,10 +754,14 @@ async function updateProduct(code) {
     const priceProduct = fieldPriceNewProduct.value;
     const newProduct = new Product(idProduct, nameProduct, priceProduct);
 
-    await productService.updateProduct(code, newProduct);
-
-    await tableRenderAllProducts();
-    cancelNewProduct();
+    try {
+        await productService.updateProduct(code, newProduct);
+        await tableRenderAllProducts();
+        feedbackMessage(`Produto ${code} atualizado com sucesso.`);
+        cancelNewProduct();
+    } catch (err) {
+        feedbackMessage(`${err}.`);
+    }
 }
 
 function feedbackMessage(message) {

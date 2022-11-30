@@ -27,7 +27,7 @@ export default class ProductServices {
         });
 
         if (response.ok) {
-            return 'Produto cadastrado';
+            return await response.text();
         }
 
         throw new Error(await response.text());
@@ -43,7 +43,7 @@ export default class ProductServices {
             let data = await response.json();
             return data;
         } else {
-            return console.log(response);
+            return await response.text();
         }
     }
 
@@ -52,9 +52,9 @@ export default class ProductServices {
             method: 'POST'
         });
         if (response.ok) {
-            console.log(await response.text());
+            return await response.json();
         } else {
-            return console.log(response);
+            return await response.text();
         }
     }
 }
