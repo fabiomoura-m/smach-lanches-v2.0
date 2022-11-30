@@ -75,6 +75,7 @@ const btnCancelDeleteProduct = document.getElementById(
 
 let currentOperation = 'saveProduct';
 
+let productFound = [];
 let arrayOrder = [];
 let arrayOrders = [];
 let arrayFilteredByType = [];
@@ -107,7 +108,7 @@ async function searchProduct(e) {
     e.preventDefault();
     const codeProduct = fieldSearchProduct.value;
     if (codeProduct) {
-        let productFound = await productService.getProductForId(codeProduct);
+        productFound = await productService.getProductForId(codeProduct);
         if (productFound !== undefined) {
             fieldNameProduct.value = productFound[0].nome;
             fieldPriceProduct.value = formatPrice(productFound[0].preco);
@@ -123,64 +124,90 @@ async function searchProduct(e) {
     }
 }
 
-function addProductOnTable(e) {
+async function addProductOnTable(e) {
     e.preventDefault();
     buttonSaveOrder.removeAttribute('disabled');
     buttonAddProduct.setAttribute('disabled', 'true');
     const codeProduct = fieldSearchProduct.value;
-    let sameProduct = arrayOrder.find(product => product.code == codeProduct);
-    let totalOrder = 0;
+    // let sameProduct = arrayOrder.find(product => product.code == codeProduct);
+    // let totalOrder = 0;
 
-    productFound = {
-        ...productFound,
-        amount: Number(fieldAmountProduct.value),
-        total: fieldAmountProduct.value * productFound.price
-    };
+    let typeRequest = document.querySelector(
+        'input[name="type-request"]:checked'
+    ).value;
 
-    if (sameProduct !== undefined) {
-        arrayOrder.forEach(item => {
-            if (item.code == sameProduct.code) {
-                item.amount += Number(fieldAmountProduct.value);
-                item.total = item.amount * item.price;
-            }
-        });
+    const quantity = Number(fieldAmountProduct.value);
 
-        updateOrderList();
-
-        totalOrder = arrayOrder.reduce((atual, item) => {
-            return atual + item.amount * item.price;
-        }, 0);
-
-        totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-            totalOrder
-        )}<span>`;
-        form.reset();
-        return;
+    let newOrder = await fetch(`http://localhost:3000/pedido`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({
+            id: 10000,
+            tipo: typeRequest,
+            produtos: [
+                {
+                    idProduto: codeProduct,
+                    quantidade: quantity
+                }
+            ]
+        })
+    });
+    if (newOrder.ok) {
+        return console.log(await newOrder.json());
     }
 
-    arrayOrder.push(productFound);
+    // productFound = {
+    //     ...productFound,
+    //     amount: Number(fieldAmountProduct.value),
+    //     total: fieldAmountProduct.value * productFound.price
+    // };
 
-    totalOrder = arrayOrder.reduce((current, item) => {
-        return current + item.amount * item.price;
-    }, 0);
+    // if (sameProduct !== undefined) {
+    //     arrayOrder.forEach(item => {
+    //         if (item.code == sameProduct.code) {
+    //             item.amount += Number(fieldAmountProduct.value);
+    //             item.total = item.amount * item.price;
+    //         }
+    //     });
 
-    let trTds = `
-    <tr>
-        <td>${productFound.code}</td>
-        <td>${productFound.productName}</td>
-        <td>${productFound.amount}</td>
-        <td>${formatPrice(productFound.total)}</td>
-    </tr>`;
+    //     updateOrderList();
 
-    tBodyProduct.innerHTML += trTds;
-    feedbackNoProducts.style.display = 'none';
-    containerTotalOrder.style.display = 'flex';
-    containerSetSave.style.justifyContent = 'space-between';
-    totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-        totalOrder
-    )}<span>`;
-    form.reset();
+    //     totalOrder = arrayOrder.reduce((atual, item) => {
+    //         return atual + item.amount * item.price;
+    //     }, 0);
+
+    //     totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
+    //         totalOrder
+    //     )}<span>`;
+    //     form.reset();
+    //     return;
+    // }
+
+    // arrayOrder.push(productFound);
+
+    // totalOrder = arrayOrder.reduce((current, item) => {
+    //     return current + item.amount * item.price;
+    // }, 0);
+
+    // let trTds = `
+    // <tr>
+    //     <td>${productFound.code}</td>
+    //     <td>${productFound.productName}</td>
+    //     <td>${productFound.amount}</td>
+    //     <td>${formatPrice(productFound.total)}</td>
+    // </tr>`;
+
+    // tBodyProduct.innerHTML += trTds;
+    // feedbackNoProducts.style.display = 'none';
+    // containerTotalOrder.style.display = 'flex';
+    // containerSetSave.style.justifyContent = 'space-between';
+    // totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
+    //     totalOrder
+    // )}<span>`;
+    // form.reset();
 }
+
+function saveNewOrder() {}
 
 function updateOrderList() {
     let trTds = '';
@@ -546,7 +573,7 @@ function printOrders() {
 }
 
 function closeFeedback() {
-    feedbackOrders.style.right = '-300px';
+    feedbackOrders.style.right = '-400px';
 }
 
 function returnSectionOrders() {
@@ -629,9 +656,10 @@ async function saveNewProduct() {
         let response = await productService.saveProduct(product);
         console.log(response);
         await tableRenderAllProducts();
+        feedbackMessage(`O produto ${idProduct} foi criado.`);
         cancelNewProduct();
     } catch (error) {
-        console.log(error.message);
+        feedbackMessage(`${error.message}.`);
     }
 }
 
@@ -730,6 +758,29 @@ async function updateProduct(code) {
 
     await tableRenderAllProducts();
     cancelNewProduct();
+}
+
+function feedbackMessage(message) {
+    feedbackOrders.style.display = 'flex';
+    setTimeout(() => {
+        messageFeedback.textContent = message;
+        if (document.body.clientWidth < 500) {
+            feedbackOrders.style.right = '5px';
+            feedbackOrders.style.top = '330px';
+        } else if (document.body.clientWidth < 820) {
+            feedbackOrders.style.right = '5px';
+            feedbackOrders.style.top = '55px';
+        } else {
+            feedbackOrders.style.top = '20px';
+            feedbackOrders.style.right = '100px';
+        }
+    }, 800);
+    setTimeout(() => {
+        feedbackOrders.style.right = '-400px';
+        setTimeout(() => {
+            feedbackOrders.style.display = 'none';
+        }, 200);
+    }, 5000);
 }
 
 function closeModals(modal) {

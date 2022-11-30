@@ -399,7 +399,7 @@ main {
 
 .container-feedback {
     position: absolute;
-    top: 50px;
+    top: 20px;
     right: -400px;
     display: none;
     align-items: center;
