@@ -73,6 +73,9 @@ const btnCancelDeleteProduct = document.getElementById(
     'btn-modal-cancelProduct'
 );
 
+let codeListProduct = [];
+let currentOperation = 'saveProduct';
+
 let productFound = {};
 let arrayOrder = [];
 let arrayOrders = [];
@@ -606,16 +609,15 @@ function activeButtonsNewProduct() {
     });
 }
 
-function cancelNewProduct(e) {
-    e.preventDefault();
+function cancelNewProduct() {
     formNewProduct.reset();
     buttonCancelNewProduct.style.display = 'none';
+    fieldCodeNewProduct.removeAttribute('disabled');
     buttonSaveNewProduct.disabled = true;
+    currentOperation = 'saveProduct';
 }
 
-async function saveNewProduct(e) {
-    e.preventDefault();
-
+async function saveNewProduct() {
     const idProduct = fieldCodeNewProduct.value;
     const nameProduct = fieldNameNewProduct.value;
     const priceProduct = fieldPriceNewProduct.value;
@@ -624,8 +626,8 @@ async function saveNewProduct(e) {
     try {
         let response = await productService.saveProduct(product);
         console.log(response);
-        tableRenderProduct(idProduct, nameProduct, priceProduct);
-        cancelNewProduct(e);
+        tableRenderAllProducts();
+        cancelNewProduct();
     } catch (error) {
         console.log(error.message);
     }
@@ -653,6 +655,10 @@ function tableRenderProduct(code, name, price) {
     tdPrice.textContent = formatPrice(Number(price));
 
     removeButton.addEventListener('click', () => removeProduct(code, name));
+    editButton.addEventListener('click', () => {
+        currentOperation = 'editProduct';
+        editProduct(code);
+    });
 
     tr.appendChild(tdCode);
     tr.appendChild(tdName);
@@ -667,9 +673,16 @@ async function tableRenderAllProducts() {
 
     let products = await productService.getAllProducts();
 
-    products.forEach(product => {
+    let firstProduct = products[products.length - 1]?.id || 999;
+
+    codeListProduct = [];
+
+    products.reverse().forEach(product => {
         tableRenderProduct(product.id, product.nome, product.preco);
+        codeListProduct.push(product.id);
     });
+
+    fieldCodeNewProduct.value = firstProduct + 1;
 }
 
 async function removeProduct(code, name) {
@@ -690,6 +703,30 @@ async function removeProduct(code, name) {
             modalConfirmDeleteProduct.close();
         }
     };
+}
+
+async function editProduct(code) {
+    let product = await productService.getProductForId(code);
+
+    fieldCodeNewProduct.value = product[0].id;
+    fieldCodeNewProduct.setAttribute('disabled', 'disabled');
+    fieldNameNewProduct.value = product[0].nome;
+    fieldPriceNewProduct.value = product[0].preco;
+
+    buttonSaveNewProduct.disabled = false;
+    buttonCancelNewProduct.style.display = 'flex';
+}
+
+async function updateProduct(code) {
+    const idProduct = fieldCodeNewProduct.value;
+    const nameProduct = fieldNameNewProduct.value;
+    const priceProduct = fieldPriceNewProduct.value;
+    const newProduct = new Product(idProduct, nameProduct, priceProduct);
+
+    await productService.updateProduct(code, newProduct);
+
+    cancelNewProduct();
+    return await tableRenderAllProducts();
 }
 
 function closeModals(modal) {
@@ -714,8 +751,24 @@ buttonCloseModal.addEventListener('click', () => {
 buttonCancelDelete.addEventListener('click', () => {
     closeModals(modalDeleteOrder);
 });
-buttonCancelNewProduct.addEventListener('click', cancelNewProduct);
-buttonSaveNewProduct.addEventListener('click', saveNewProduct);
+buttonCancelNewProduct.addEventListener('click', e => {
+    e.preventDefault();
+    cancelNewProduct();
+});
+buttonSaveNewProduct.addEventListener('click', e => {
+    e.preventDefault();
+    const idProduct = fieldCodeNewProduct.value;
+
+    let editOperation = codeListProduct.find(code => code == idProduct);
+
+    if (editOperation && currentOperation == 'editProduct') {
+        updateProduct(idProduct);
+    } else if (editOperation && currentOperation == 'saveProduct') {
+        alert('produto já cadastrado');
+    } else {
+        saveNewProduct();
+    }
+});
 btnCancelDeleteProduct.addEventListener('click', () => {
     closeModals(modalConfirmDeleteProduct);
 });

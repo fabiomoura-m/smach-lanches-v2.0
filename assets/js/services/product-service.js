@@ -33,15 +33,11 @@ export default class ProductServices {
         throw new Error(await response.text());
     }
 
-    async updateProduct(id) {
+    async updateProduct(id, product) {
         let response = await fetch(`${BASE_URL}/produto/${id}/atualizar`, {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify({
-                id: 50,
-                nome: 'Batata',
-                preco: 14
-            })
+            body: JSON.stringify(product)
         });
         if (response.ok) {
             let data = await response.json();
