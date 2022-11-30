@@ -1,6 +1,7 @@
 import { productList } from './products.js';
 import Product from './models/product.js';
 import ProductServices from './services/product-service.js';
+import ProductOrder from './models/productOrder.js';
 
 const productService = new ProductServices();
 
@@ -128,33 +129,54 @@ async function addProductOnTable(e) {
     e.preventDefault();
     buttonSaveOrder.removeAttribute('disabled');
     buttonAddProduct.setAttribute('disabled', 'true');
-    const codeProduct = fieldSearchProduct.value;
-    // let sameProduct = arrayOrder.find(product => product.code == codeProduct);
-    // let totalOrder = 0;
 
-    let typeRequest = document.querySelector(
-        'input[name="type-request"]:checked'
-    ).value;
+    const idProduct = fieldSearchProduct.value;
+    const nameProduct = fieldNameProduct.value;
+    const quantity = fieldAmountProduct.value;
+    const priceProduct = fieldPriceProduct.value.replace('R$', '');
 
-    const quantity = Number(fieldAmountProduct.value);
+    const productOrder = new ProductOrder(
+        idProduct,
+        nameProduct,
+        quantity,
+        priceProduct
+    );
 
-    let newOrder = await fetch(`http://localhost:3000/pedido`, {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify({
-            id: 10000,
-            tipo: typeRequest,
-            produtos: [
-                {
-                    idProduto: codeProduct,
-                    quantidade: quantity
-                }
-            ]
-        })
-    });
-    if (newOrder.ok) {
-        return console.log(await newOrder.json());
+    const sameProduct = arrayOrder.find(
+        product => product.idProduto == idProduct
+    );
+
+    if (sameProduct !== undefined) {
+        arrayOrder.forEach(product => {
+            if (product.idProduto == idProduct) {
+                product.editProduct(quantity);
+
+                renderProductsOrder();
+            }
+        });
+    } else {
+        arrayOrder.push(productOrder);
+
+        renderProductsOrder();
     }
+
+    // let newOrder = await fetch(`http://localhost:3000/pedido`, {
+    //     method: 'POST',
+    //     headers: { 'Content-type': 'application/json' },
+    //     body: JSON.stringify({
+    //         id: 10000,
+    //         tipo: typeRequest,
+    //         produtos: [
+    //             {
+    //                 idProduto: codeProduct,
+    //                 quantidade: quantity
+    //             }
+    //         ]
+    //     })
+    // });
+    // if (newOrder.ok) {
+    //     return console.log(await newOrder.json());
+    // }
 
     // productFound = {
     //     ...productFound,
@@ -188,23 +210,37 @@ async function addProductOnTable(e) {
     // totalOrder = arrayOrder.reduce((current, item) => {
     //     return current + item.amount * item.price;
     // }, 0);
+}
 
-    // let trTds = `
-    // <tr>
-    //     <td>${productFound.code}</td>
-    //     <td>${productFound.productName}</td>
-    //     <td>${productFound.amount}</td>
-    //     <td>${formatPrice(productFound.total)}</td>
-    // </tr>`;
+function renderProductsOrder() {
+    let trTds = '';
+    arrayOrder.forEach(product => {
+        trTds += `
+            <tr>
+                <td>${product.idProduto}</td>
+                <td>${product.nome}</td>
+                <td>${product.quantidade}</td>
+                <td>${formatPrice(product.getTotal())}</td>
+            </tr>`;
+    });
 
-    // tBodyProduct.innerHTML += trTds;
-    // feedbackNoProducts.style.display = 'none';
-    // containerTotalOrder.style.display = 'flex';
-    // containerSetSave.style.justifyContent = 'space-between';
-    // totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-    //     totalOrder
-    // )}<span>`;
-    // form.reset();
+    tBodyProduct.innerHTML = trTds;
+    feedbackNoProducts.style.display = 'none';
+    containerTotalOrder.style.display = 'flex';
+    containerSetSave.style.justifyContent = 'space-between';
+    totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
+        sumTotalAmountOrders()
+    )}<span>`;
+    form.reset();
+}
+
+function sumTotalAmountOrders() {
+    console.log(arrayOrder);
+    const total = arrayOrder.reduce((current, product) => {
+        return current + product.quantidade * product.valor;
+    }, 0);
+    console.log(total);
+    return total;
 }
 
 function saveNewOrder() {}
