@@ -76,7 +76,6 @@ const btnCancelDeleteProduct = document.getElementById(
 
 let currentOperation = 'saveProduct';
 
-let productFound = [];
 let arrayOrder = [];
 let arrayOrders = [];
 let arrayFilteredByType = [];
@@ -109,7 +108,7 @@ async function searchProduct(e) {
     e.preventDefault();
     const codeProduct = fieldSearchProduct.value;
     if (codeProduct) {
-        productFound = await productService.getProductForId(codeProduct);
+        const productFound = await productService.getProductForId(codeProduct);
         if (productFound !== undefined) {
             fieldNameProduct.value = productFound[0].nome;
             fieldPriceProduct.value = formatPrice(productFound[0].preco);
@@ -159,57 +158,6 @@ async function addProductOnTable(e) {
 
         renderProductsOrder();
     }
-
-    // let newOrder = await fetch(`http://localhost:3000/pedido`, {
-    //     method: 'POST',
-    //     headers: { 'Content-type': 'application/json' },
-    //     body: JSON.stringify({
-    //         id: 10000,
-    //         tipo: typeRequest,
-    //         produtos: [
-    //             {
-    //                 idProduto: codeProduct,
-    //                 quantidade: quantity
-    //             }
-    //         ]
-    //     })
-    // });
-    // if (newOrder.ok) {
-    //     return console.log(await newOrder.json());
-    // }
-
-    // productFound = {
-    //     ...productFound,
-    //     amount: Number(fieldAmountProduct.value),
-    //     total: fieldAmountProduct.value * productFound.price
-    // };
-
-    // if (sameProduct !== undefined) {
-    //     arrayOrder.forEach(item => {
-    //         if (item.code == sameProduct.code) {
-    //             item.amount += Number(fieldAmountProduct.value);
-    //             item.total = item.amount * item.price;
-    //         }
-    //     });
-
-    //     updateOrderList();
-
-    //     totalOrder = arrayOrder.reduce((atual, item) => {
-    //         return atual + item.amount * item.price;
-    //     }, 0);
-
-    //     totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-    //         totalOrder
-    //     )}<span>`;
-    //     form.reset();
-    //     return;
-    // }
-
-    // arrayOrder.push(productFound);
-
-    // totalOrder = arrayOrder.reduce((current, item) => {
-    //     return current + item.amount * item.price;
-    // }, 0);
 }
 
 function renderProductsOrder() {
@@ -232,14 +180,14 @@ function renderProductsOrder() {
         sumTotalAmountOrders()
     )}<span>`;
     form.reset();
+
+    console.log(arrayOrder);
 }
 
 function sumTotalAmountOrders() {
-    console.log(arrayOrder);
     const total = arrayOrder.reduce((current, product) => {
         return current + product.quantidade * product.valor;
     }, 0);
-    console.log(total);
     return total;
 }
 
@@ -271,59 +219,36 @@ function cancelOrder() {
     arrayOrder = [];
 }
 
-function saveOrder() {
+async function saveOrder() {
     let typeRequest = document.querySelector(
         'input[name="type-request"]:checked'
     ).value;
 
-    let statusOrder = 'Recebido';
-    let totalOrder = arrayOrder.reduce((current, item) => {
-        return current + item.amount * item.price;
-    }, 0);
-
-    let itensOrder = arrayOrder.map(item => {
+    let arrayPedidosReduzido = arrayOrder.map(product => {
         return {
-            product: item.productName,
-            amount: item.amount
+            idProduto: product.idProduto,
+            quantidade: product.quantidade
         };
     });
 
-    let order = {
-        number: numberOrder,
-        items: itensOrder,
-        type: typeRequest,
-        price: totalOrder,
-        status: statusOrder
-    };
+    let newOrder = await fetch(`http://localhost:3000/pedido`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({
+            id: 1002,
+            tipo: typeRequest,
+            produtos: arrayPedidosReduzido
+        })
+    });
+    if (newOrder.ok) {
+        let data = await newOrder.json();
+        showOrder(data);
+        feedbackNoProductsOrder.style.display = 'none';
 
-    arrayOrders.push(order);
+        cancelOrder();
 
-    showOrder(order);
-    feedbackNoProductsOrder.style.display = 'none';
-
-    numberOrder++;
-    cancelOrder();
-
-    feedbackOrders.style.display = 'flex';
-    setTimeout(() => {
-        messageFeedback.textContent = 'O pedido foi recebido.';
-        if (document.body.clientWidth < 500) {
-            feedbackOrders.style.right = '5px';
-            feedbackOrders.style.top = '330px';
-        } else if (document.body.clientWidth < 820) {
-            feedbackOrders.style.right = '5px';
-            feedbackOrders.style.top = '55px';
-        } else {
-            feedbackOrders.style.top = '50px';
-            feedbackOrders.style.right = '100px';
-        }
-    }, 800);
-    setTimeout(() => {
-        feedbackOrders.style.right = '-300px';
-        setTimeout(() => {
-            feedbackOrders.style.display = 'none';
-        }, 200);
-    }, 5000);
+        feedbackMessage('O pedido foi recebido.');
+    }
 }
 
 function showOrder(order) {
@@ -337,22 +262,25 @@ function showOrder(order) {
                 <td>
                     <div class="checkbox-wrapper">
                         <input type="checkbox" class="checkbox" id="${
-                            order.number
+                            order.id
                         }" onclick="selectCheckbox()">
-                        <label class="checkbox-label order" for="${
-                            order.number
-                        }">${order.number}</label>
+                        <label class="checkbox-label order" for="${order.id}">${
+        order.id
+    }</label>
                     </div>
                 </td>
                 <td>
-                ${order.items
-                    .map(item => `${item.amount} - ${item.product} </br>`)
+                ${order.produtos
+                    .map(
+                        product =>
+                            `${product.quantidade} - ${product.nome} </br>`
+                    )
                     .join('')}
                 </td>
-                <td>${order.type}</td>
-                <td>${formatPrice(order.price)}</td>
+                <td>${order.tipo}</td>
+                <td>${formatPrice(order.total)}</td>
                 <td><button class="button-order-status" onclick="changeOrderStatus(${
-                    order.number
+                    order.id
                 })">${order.status}</button></td>
             </tr>`;
 
