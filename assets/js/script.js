@@ -218,6 +218,9 @@ function cancelOrder() {
 }
 
 async function saveOrder() {
+    sectionOrder.style.display = 'block';
+    sectionNewOrder.style.display = 'none';
+
     let typeRequest = document.querySelector(
         'input[name="type-request"]:checked'
     ).value;
@@ -246,9 +249,6 @@ async function saveOrder() {
 }
 
 function showOrder(order) {
-    sectionOrder.style.display = 'block';
-    sectionNewOrder.style.display = 'none';
-
     let trTds = '';
 
     trTds += `
@@ -279,6 +279,17 @@ function showOrder(order) {
             </tr>`;
 
     tbodyOrders.innerHTML += trTds;
+}
+
+async function tableRenderAllOrders() {
+    tbodyOrders.innerHTML = '';
+
+    const orders = await orderService.getAllOrders();
+
+    if (orders.length > 0) {
+        orders.forEach(order => showOrder(order));
+        feedbackNoProductsOrder.style.display = 'none';
+    }
 }
 
 function changeOrderStatus(orderNumber) {
@@ -792,5 +803,6 @@ window.addEventListener('load', () => {
     activeButtonsNewProduct();
     ShowCurrentTime();
     tableRenderAllProducts();
+    tableRenderAllOrders();
     setInterval(ShowCurrentTime, 1000);
 });

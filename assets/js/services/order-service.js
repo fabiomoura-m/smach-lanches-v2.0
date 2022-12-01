@@ -19,4 +19,11 @@ export default class OrderServices {
 
         throw new Error(await response.text());
     }
+
+    async getAllOrders() {
+        const response = await fetch(`${BASE_URL}/pedido/todos`);
+        const orders = await response.json();
+
+        return orders;
+    }
 }
