@@ -262,12 +262,12 @@ function showOrder(order) {
             <tr>
                 <td>
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" class="checkbox" id="${
+                        <input type="checkbox" class="checkbox checkbox-order"  id="checkbox${
                             order.id
                         }">
-                        <label class="checkbox-label order" for="${order.id}">${
-        order.id
-    }</label>
+                        <label class="checkbox-label order" for="checkbox${
+                            order.id
+                        }">${order.id}</label>
                     </div>
                 </td>
                 <td>
@@ -280,22 +280,41 @@ function showOrder(order) {
                 </td>
                 <td>${order.tipo}</td>
                 <td>${formatPrice(order.total)}</td>
-                <td><button class="button-order-status ${statusOrder}" id="status${
+                <td>
+                    <button class="button-order-status ${statusOrder}" order-id="${
         order.id
-    }">${order.status}</button></td>
+    }" order-status="${order.status}">
+                    ${order.status}
+                    </button>
+                </td>
             </tr>`;
 
     tbodyOrders.innerHTML += trTds;
 
-    document
-        .getElementById(`${order.id}`)
-        .addEventListener('click', selectCheckbox());
+    tableOrderListeners();
+}
 
-    document
-        .getElementById(`status${order.id}`)
-        .addEventListener('click', () =>
-            changeOrderStatus(order.id, order.status)
-        );
+function tableOrderListeners() {
+    const buttonsChangeStatus = document.querySelectorAll(
+        '.button-order-status'
+    );
+
+    const checkboxs = document.querySelectorAll('.checkbox-order');
+
+    buttonsChangeStatus.forEach(button => {
+        button.addEventListener('click', () => {
+            const orderID = button.getAttribute('order-id');
+            const orderStatus = button.getAttribute('order-status');
+
+            changeOrderStatus(orderID, orderStatus);
+        });
+    });
+
+    checkboxs.forEach(checkbox => {
+        checkbox.addEventListener('click', () => {
+            selectCheckbox();
+        });
+    });
 }
 
 async function tableRenderAllOrders() {

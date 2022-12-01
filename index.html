@@ -258,7 +258,11 @@
     </footer>
 
     <!-- <script src="assets/js/products.js"></script> -->
-    <script src="assets/js/script.js" type="module"></script>
+    <script src="assets/js/script.js" type="module">
+        import { hello } from './test.js'
+
+        document.querySelector('#hello').addEventListener('click', hello)
+    </script>
 </body>
 
 </html>
