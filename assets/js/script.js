@@ -251,13 +251,20 @@ async function saveOrder() {
 function showOrder(order) {
     let trTds = '';
 
+    let statusOrder =
+        order.status == 'Recebido'
+            ? ''
+            : order.status == 'Pronto'
+            ? 'ready'
+            : 'delivered';
+
     trTds += `
             <tr>
                 <td>
                     <div class="checkbox-wrapper">
                         <input type="checkbox" class="checkbox" id="${
                             order.id
-                        }" onclick="selectCheckbox()">
+                        }">
                         <label class="checkbox-label order" for="${order.id}">${
         order.id
     }</label>
@@ -273,12 +280,22 @@ function showOrder(order) {
                 </td>
                 <td>${order.tipo}</td>
                 <td>${formatPrice(order.total)}</td>
-                <td><button class="button-order-status" onclick="changeOrderStatus(${
-                    order.id
-                })">${order.status}</button></td>
+                <td><button class="button-order-status ${statusOrder}" id="status${
+        order.id
+    }">${order.status}</button></td>
             </tr>`;
 
     tbodyOrders.innerHTML += trTds;
+
+    document
+        .getElementById(`${order.id}`)
+        .addEventListener('click', selectCheckbox());
+
+    document
+        .getElementById(`status${order.id}`)
+        .addEventListener('click', () =>
+            changeOrderStatus(order.id, order.status)
+        );
 }
 
 async function tableRenderAllOrders() {
@@ -292,58 +309,55 @@ async function tableRenderAllOrders() {
     }
 }
 
-function changeOrderStatus(orderNumber) {
-    arrayOrders = arrayOrders.map(order => {
-        if (order.number == orderNumber) {
-            if (order.status == 'Recebido') {
-                order.status = 'Pronto';
-            } else if (order.status == 'Pronto') {
-                order.status = 'Entregue';
-            }
+async function changeOrderStatus(id, status) {
+    if (status !== 'Entregue') {
+        try {
+            await orderService.changeStatus(id, status);
+            tableRenderAllOrders();
+        } catch (err) {
+            feedbackMessage(`${err}.`);
         }
-        return order;
-    });
-    updateAllOrders();
+    }
 }
 
-function updateAllOrders(array = arrayOrders) {
-    array.forEach((order, index) => {
-        let trTds = `
-        <tr>
-            <td>
-                <div class="checkbox-wrapper">
-                    <input type="checkbox" class="checkbox" id="${
-                        order.number
-                    }" onclick="selectCheckbox()">
-                    <label class="checkbox-label order" for="${order.number}">${
-            order.number
-        }</label>
-                </div>              
-            </td>
-            <td>
-                ${order.items
-                    .map(item => `${item.amount} - ${item.product} </br>`)
-                    .join('')}
-            </td>
-            <td>${order.type}</td>
-            <td>${formatPrice(order.price)}</td>
-            <td><button id="bt-trocaStatus-${index}" class="button-order-status  ${
-            order.status == 'Recebido'
-                ? ''
-                : order.status === 'Pronto'
-                ? 'ready'
-                : 'delivered'
-        }">${order.status}</button></td>
-        </tr>`;
-        tbodyOrders.innerHTML += trTds;
-        document
-            .getElementById(`bt-trocaStatus-${index}`)
-            .addEventListener('click', () => {
-                // changeOrderStatus(order.number);
-                console.log(order);
-            });
-    });
-}
+// function updateAllOrders(array = arrayOrders) {
+//     array.forEach((order, index) => {
+//         let trTds = `
+//         <tr>
+//             <td>
+//                 <div class="checkbox-wrapper">
+//                     <input type="checkbox" class="checkbox" id="${
+//                         order.number
+//                     }" onclick="selectCheckbox()">
+//                     <label class="checkbox-label order" for="${order.number}">${
+//             order.number
+//         }</label>
+//                 </div>
+//             </td>
+//             <td>
+//                 ${order.items
+//                     .map(item => `${item.amount} - ${item.product} </br>`)
+//                     .join('')}
+//             </td>
+//             <td>${order.type}</td>
+//             <td>${formatPrice(order.price)}</td>
+//             <td><button id="bt-trocaStatus-${index}" class="button-order-status  ${
+//             order.status == 'Recebido'
+//                 ? ''
+//                 : order.status === 'Pronto'
+//                 ? 'ready'
+//                 : 'delivered'
+//         }">${order.status}</button></td>
+//         </tr>`;
+//         tbodyOrders.innerHTML += trTds;
+//         document
+//             .getElementById(`bt-trocaStatus-${index}`)
+//             .addEventListener('click', () => {
+//                 // changeOrderStatus(order.number);
+//                 console.log(order);
+//             });
+//     });
+// }
 
 function showButtonDelete(checked = false) {
     if (checkedAll || checked) {

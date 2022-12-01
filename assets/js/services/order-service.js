@@ -26,4 +26,26 @@ export default class OrderServices {
 
         return orders;
     }
+
+    async changeStatus(id, status) {
+        let newStatus = 'Entregue';
+
+        if (status == 'Recebido') {
+            newStatus = 'Pronto';
+        } else if (status == 'Pronto') {
+            newStatus == 'Entregue';
+        }
+
+        let response = await fetch(`${BASE_URL}/pedido/${id}/mudar-status`, {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                status: newStatus
+            })
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    }
 }
