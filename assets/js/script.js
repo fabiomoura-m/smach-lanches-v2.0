@@ -2,8 +2,10 @@ import { productList } from './products.js';
 import Product from './models/product.js';
 import ProductServices from './services/product-service.js';
 import ProductOrder from './models/productOrder.js';
+import OrderServices from './services/order-service.js';
 
 const productService = new ProductServices();
+const orderService = new OrderServices();
 
 const buttonSearchProduct = document.getElementById('btn-search');
 const fieldSearchProduct = document.getElementById('codeProduct');
@@ -124,7 +126,7 @@ async function searchProduct(e) {
     }
 }
 
-async function addProductOnTable(e) {
+async function addProductToOrder(e) {
     e.preventDefault();
     buttonSaveOrder.removeAttribute('disabled');
     buttonAddProduct.setAttribute('disabled', 'true');
@@ -177,21 +179,17 @@ function renderProductsOrder() {
     containerTotalOrder.style.display = 'flex';
     containerSetSave.style.justifyContent = 'space-between';
     totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-        sumTotalAmountOrders()
+        sumTotalAmountOrder()
     )}<span>`;
     form.reset();
-
-    console.log(arrayOrder);
 }
 
-function sumTotalAmountOrders() {
+function sumTotalAmountOrder() {
     const total = arrayOrder.reduce((current, product) => {
         return current + product.quantidade * product.valor;
     }, 0);
     return total;
 }
-
-function saveNewOrder() {}
 
 function updateOrderList() {
     let trTds = '';
@@ -224,30 +222,26 @@ async function saveOrder() {
         'input[name="type-request"]:checked'
     ).value;
 
-    let arrayPedidosReduzido = arrayOrder.map(product => {
+    const arrayProductsOrder = arrayOrder.map(product => {
         return {
             idProduto: product.idProduto,
             quantidade: product.quantidade
         };
     });
 
-    let newOrder = await fetch(`http://localhost:3000/pedido`, {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify({
-            id: 1002,
-            tipo: typeRequest,
-            produtos: arrayPedidosReduzido
-        })
-    });
-    if (newOrder.ok) {
-        let data = await newOrder.json();
-        showOrder(data);
+    try {
+        const order = await orderService.saveOrder(
+            arrayProductsOrder,
+            typeRequest
+        );
+        showOrder(order);
         feedbackNoProductsOrder.style.display = 'none';
 
         cancelOrder();
 
         feedbackMessage('O pedido foi recebido.');
+    } catch (err) {
+        feedbackMessage(`${err}.`);
     }
 }
 
@@ -757,7 +751,7 @@ function closeModals(modal) {
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
-buttonAddProduct.addEventListener('click', addProductOnTable);
+buttonAddProduct.addEventListener('click', addProductToOrder);
 buttonCancelOrder.addEventListener('click', cancelOrder);
 buttonCancelOrder.addEventListener('dblclick', returnSectionOrders);
 buttonSaveOrder.addEventListener('click', saveOrder);
