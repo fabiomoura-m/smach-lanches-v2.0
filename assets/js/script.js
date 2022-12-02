@@ -403,84 +403,88 @@ async function deleteOrder() {
     };
 }
 
-function filterOrdersByType() {
+async function filterOrdersByType() {
     let orderType = selectChangeType.value;
+
+    let products = await orderService.getAllOrders();
 
     if (arrayFilteredByStatus.length > 0) {
         if (orderType == '') {
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
             arrayFilteredByType = [];
         } else if (orderType == 'Delivery') {
             arrayFilteredByType = arrayFilteredByStatus.filter(
-                order => order.type == 'Delivery'
+                order => order.tipo == 'Delivery'
             );
-            updateAllOrders(arrayFilteredByType);
+            tableRenderOrdersFiltered(arrayFilteredByType);
         } else if (orderType == 'Salão') {
             arrayFilteredByType = arrayFilteredByStatus.filter(
-                order => order.type == 'Salão'
+                order => order.tipo == 'Salão'
             );
-            updateAllOrders(arrayFilteredByType);
+            tableRenderOrdersFiltered(arrayFilteredByType);
         }
     } else {
         if (orderType == '') {
-            updateAllOrders();
+            tableRenderAllOrders();
             arrayFilteredByType = [];
         } else if (orderType == 'Delivery') {
-            arrayFilteredByType = arrayOrders.filter(
-                order => order.type == 'Delivery'
+            arrayFilteredByType = products.filter(
+                order => order.tipo == 'Delivery'
             );
-            updateAllOrders(arrayFilteredByType);
+            tableRenderOrdersFiltered(arrayFilteredByType);
         } else if (orderType == 'Salão') {
-            arrayFilteredByType = arrayOrders.filter(
-                order => order.type == 'Salão'
+            arrayFilteredByType = products.filter(
+                order => order.tipo == 'Salão'
             );
-            updateAllOrders(arrayFilteredByType);
+            tableRenderOrdersFiltered(arrayFilteredByType);
         }
     }
 }
 
-function filterOrdersByStatus() {
+async function filterOrdersByStatus() {
     let orderStatus = selectChangeStatus.value;
+
+    let products = await orderService.getAllOrders();
 
     if (arrayFilteredByType.length > 0) {
         if (orderStatus == '') {
-            updateAllOrders(arrayFilteredByType);
+            tableRenderOrdersFiltered(arrayFilteredByType);
             arrayFilteredByStatus = [];
         } else if (orderStatus == 'Recebido') {
             arrayFilteredByStatus = arrayFilteredByType.filter(
                 order => order.status == 'Recebido'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         } else if (orderStatus == 'Pronto') {
             arrayFilteredByStatus = arrayFilteredByType.filter(
                 order => order.status == 'Pronto'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         } else if (orderStatus == 'Entregue') {
             arrayFilteredByStatus = arrayFilteredByType.filter(
                 order => order.status == 'Entregue'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         }
     } else {
         if (orderStatus == '') {
-            updateAllOrders();
+            tableRenderAllOrders();
             arrayFilteredByStatus = [];
         } else if (orderStatus == 'Recebido') {
-            arrayFilteredByStatus = arrayOrders.filter(
+            arrayFilteredByStatus = products.filter(
                 order => order.status == 'Recebido'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         } else if (orderStatus == 'Pronto') {
-            arrayFilteredByStatus = arrayOrders.filter(
+            arrayFilteredByStatus = products.filter(
                 order => order.status == 'Pronto'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         } else if (orderStatus == 'Entregue') {
-            arrayFilteredByStatus = arrayOrders.filter(
+            arrayFilteredByStatus = products.filter(
                 order => order.status == 'Entregue'
             );
-            updateAllOrders(arrayFilteredByStatus);
+            tableRenderOrdersFiltered(arrayFilteredByStatus);
         }
     }
 }
