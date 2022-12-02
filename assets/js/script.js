@@ -1,4 +1,3 @@
-import { productList } from './products.js';
 import Product from './models/product.js';
 import ProductServices from './services/product-service.js';
 import ProductOrder from './models/productOrder.js';
@@ -30,7 +29,6 @@ const totalAmountOrder = document.getElementById('total-amount-order');
 
 const tbodyOrders = document.getElementById('tBodyOrders');
 const feedbackNoProductsOrder = document.getElementById('feedback-orders');
-const buttonOrderStatus = document.getElementById('btn-status');
 
 const deleteContainer = document.getElementById('container-delete');
 const filterContainer = document.getElementById('container-filter');
@@ -65,7 +63,6 @@ const fieldPriceNewProduct = document.getElementById('priceNewProduct');
 const buttonCancelNewProduct = document.getElementById('btn-cancelNewProduct');
 const buttonSaveNewProduct = document.getElementById('btn-addNewProduct');
 const inputsSectionNewProduct = document.querySelectorAll('.input-newProduct');
-const formNewProduct = document.getElementById('form-newProduct');
 
 const tableBodyNewProducts = document.getElementById('tBodyNewProduct');
 const modalConfirmDeleteProduct = document.getElementById('dialog-product');
@@ -79,10 +76,8 @@ const btnCancelDeleteProduct = document.getElementById(
 let currentOperation = 'saveProduct';
 
 let arrayOrder = [];
-let arrayOrders = [];
 let arrayFilteredByType = [];
 let arrayFilteredByStatus = [];
-let numberOrder = 1000;
 let checkedAll = false;
 
 function changeSection(e) {
@@ -170,7 +165,7 @@ function renderProductsOrder() {
                 <td>${product.idProduto}</td>
                 <td>${product.nome}</td>
                 <td>${product.quantidade}</td>
-                <td>${formatPrice(product.getTotal())}</td>
+                <td>${formatPrice(product.total)}</td>
             </tr>`;
     });
 
@@ -189,21 +184,6 @@ function sumTotalAmountOrder() {
         return current + product.quantidade * product.valor;
     }, 0);
     return total;
-}
-
-function updateOrderList() {
-    let trTds = '';
-    arrayOrder.forEach(order => {
-        trTds += `
-            <tr>
-                <td>${order.code}</td>
-                <td>${order.productName}</td>
-                <td>${order.amount}</td>
-                <td>${formatPrice(order.total)}</td>
-            </tr>`;
-    });
-
-    tBodyProduct.innerHTML = trTds;
 }
 
 function cancelOrder() {
@@ -262,12 +242,12 @@ function showOrder(order) {
             <tr>
                 <td>
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" class="checkbox checkbox-order"  id="checkbox${
+                        <input type="checkbox" class="checkbox checkbox-order"  id="${
                             order.id
                         }">
-                        <label class="checkbox-label order" for="checkbox${
-                            order.id
-                        }">${order.id}</label>
+                        <label class="checkbox-label order" for="${order.id}">${
+        order.id
+    }</label>
                     </div>
                 </td>
                 <td>
@@ -328,6 +308,15 @@ async function tableRenderAllOrders() {
     }
 }
 
+async function tableRenderOrdersFiltered(orders) {
+    tbodyOrders.innerHTML = '';
+
+    if (orders.length > 0) {
+        orders.forEach(order => showOrder(order));
+        feedbackNoProductsOrder.style.display = 'none';
+    }
+}
+
 async function changeOrderStatus(id, status) {
     if (status !== 'Entregue') {
         try {
@@ -338,45 +327,6 @@ async function changeOrderStatus(id, status) {
         }
     }
 }
-
-// function updateAllOrders(array = arrayOrders) {
-//     array.forEach((order, index) => {
-//         let trTds = `
-//         <tr>
-//             <td>
-//                 <div class="checkbox-wrapper">
-//                     <input type="checkbox" class="checkbox" id="${
-//                         order.number
-//                     }" onclick="selectCheckbox()">
-//                     <label class="checkbox-label order" for="${order.number}">${
-//             order.number
-//         }</label>
-//                 </div>
-//             </td>
-//             <td>
-//                 ${order.items
-//                     .map(item => `${item.amount} - ${item.product} </br>`)
-//                     .join('')}
-//             </td>
-//             <td>${order.type}</td>
-//             <td>${formatPrice(order.price)}</td>
-//             <td><button id="bt-trocaStatus-${index}" class="button-order-status  ${
-//             order.status == 'Recebido'
-//                 ? ''
-//                 : order.status === 'Pronto'
-//                 ? 'ready'
-//                 : 'delivered'
-//         }">${order.status}</button></td>
-//         </tr>`;
-//         tbodyOrders.innerHTML += trTds;
-//         document
-//             .getElementById(`bt-trocaStatus-${index}`)
-//             .addEventListener('click', () => {
-//                 // changeOrderStatus(order.number);
-//                 console.log(order);
-//             });
-//     });
-// }
 
 function showButtonDelete(checked = false) {
     if (checkedAll || checked) {
@@ -418,8 +368,9 @@ function selectCheckbox() {
     showButtonDelete(checked);
 }
 
-function deleteOrder() {
+async function deleteOrder() {
     let message = 'Deseja realmente excluir o pedido?';
+
     const checkboxs = document.querySelectorAll(
         'input[type="checkbox"]:checked:not([id=select-all-orders])'
     );
@@ -433,49 +384,20 @@ function deleteOrder() {
 
     modalDeleteOrder.showModal();
 
-    buttonConfirmDelete.onclick = () => {
+    buttonConfirmDelete.onclick = async () => {
         const checkboxTHead = document.getElementById('select-all-orders');
-        checkboxs.forEach(item => {
-            arrayOrders = arrayOrders.filter(order => order.number != item.id);
+
+        await checkboxs.forEach(async product => {
+            const idProduct = Number(product.id);
+            await orderService.deleteOrder(idProduct);
         });
 
-        updateAllOrders();
-
-        if (arrayOrders.length === 0) {
-            feedbackNoProductsOrder.style.display = 'flex';
-            checkboxTHead.checked = false;
-            checkedAll = checkedAll ? false : true;
-        }
+        await tableRenderAllOrders();
+        feedbackMessage(`Pedido ${product.id} removido com sucesso.`);
 
         filterContainer.style.display = 'flex';
         deleteContainer.style.display = 'none';
-
-        if (checkboxs.length > 1) {
-            messageFeedback.textContent = 'Os pedidos foram excluídos.';
-        } else {
-            messageFeedback.textContent = 'O pedido foi excluído.';
-        }
-
-        feedbackOrders.style.display = 'flex';
-
-        setTimeout(() => {
-            if (document.body.clientWidth < 500) {
-                feedbackOrders.style.right = '5px';
-                feedbackOrders.style.top = '340px';
-            } else if (document.body.clientWidth < 820) {
-                feedbackOrders.style.right = '5px';
-                feedbackOrders.style.top = '55px';
-            } else {
-                feedbackOrders.style.top = '50px';
-                feedbackOrders.style.right = '100px';
-            }
-        }, 800);
-        setTimeout(() => {
-            feedbackOrders.style.right = '-300px';
-            setTimeout(() => {
-                feedbackOrders.style.display = 'none';
-            }, 200);
-        }, 5000);
+        checkboxTHead.checked = false;
 
         modalDeleteOrder.close();
     };
@@ -603,13 +525,6 @@ function ShowCurrentTime() {
 
 function fixZero(time) {
     return time < 10 ? `0${time}` : time;
-}
-
-function changeSectionOrderandProduct() {
-    if (sectionOrder.style.display == 'none') {
-        sectionOrder.style.display == 'flex';
-    } else if (sectionProducts.style.display == 'none') {
-    }
 }
 
 function checkInputs(inputs) {

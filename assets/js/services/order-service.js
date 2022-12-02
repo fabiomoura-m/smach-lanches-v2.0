@@ -48,4 +48,17 @@ export default class OrderServices {
             return await response.json();
         }
     }
+
+    async deleteOrder(id) {
+        let response = await fetch(`${BASE_URL}/pedido/${id}/deletar`, {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' }
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            return await response.text();
+        }
+    }
 }
