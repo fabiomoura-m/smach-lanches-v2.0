@@ -370,7 +370,8 @@ function selectCheckbox() {
     showButtonDelete(checked);
 }
 
-async function deleteOrder() {
+function openModalDeleteOrder() {
+    const messageModal = document.querySelector('#dialog-delete > div h2');
     let message = 'Deseja realmente excluir o pedido?';
 
     const checkboxs = document.querySelectorAll(
@@ -380,29 +381,40 @@ async function deleteOrder() {
     if (checkboxs.length > 1) {
         message = 'Deseja realmente excluir os pedidos?';
     }
-
-    const messageModal = document.querySelector('#dialog-delete > div h2');
     messageModal.textContent = message;
 
     modalDeleteOrder.showModal();
 
-    buttonConfirmDelete.onclick = async () => {
-        const checkboxTHead = document.getElementById('select-all-orders');
+    buttonConfirmDelete.addEventListener('click', deleteOrder);
+}
 
-        await checkboxs.forEach(async product => {
-            const idProduct = Number(product.id);
+async function deleteOrder() {
+    const checkboxs = document.querySelectorAll(
+        'input[type="checkbox"]:checked:not([id=select-all-orders])'
+    );
+    const checkboxTHead = document.getElementById('select-all-orders');
+
+    if (checkboxs.length > 1) {
+        for (let i = 0; i < checkboxs.length; i++) {
+            const idProduct = checkboxs[i].id;
             await orderService.deleteOrder(idProduct);
-        });
+        }
 
         await tableRenderAllOrders();
-        feedbackMessage(`Pedido ${product.id} removido com sucesso.`);
+        feedbackMessage(`Pedidos removidos com sucesso.`);
+    } else {
+        const idProduct = Number(checkboxs[0].id);
+        await orderService.deleteOrder(idProduct);
+        await tableRenderAllOrders();
+        feedbackMessage(`Pedido ${idProduct} removido com sucesso.`);
+    }
 
-        filterContainer.style.display = 'flex';
-        deleteContainer.style.display = 'none';
-        checkboxTHead.checked = false;
+    await showFeedbackNoOrders();
+    filterContainer.style.display = 'flex';
+    deleteContainer.style.display = 'none';
+    checkboxTHead.checked = false;
 
-        modalDeleteOrder.close();
-    };
+    closeModals(modalDeleteOrder);
 }
 
 async function filterOrdersByType() {
@@ -490,13 +502,6 @@ async function filterOrdersByStatus() {
         }
     }
 }
-
-// function formatPrice(price) {
-//     return price.toLocaleString('pt-BR', {
-//         style: 'currency',
-//         currency: 'BRL'
-//     });
-// }
 
 function printOrders() {
     window.print();
@@ -745,6 +750,16 @@ function formatPrice(price) {
     }).format(price);
 }
 
+async function showFeedbackNoOrders() {
+    const orders = await orderService.getAllOrders();
+
+    if (orders.length > 0) {
+        feedbackNoProductsOrder.style.display = 'none';
+    } else {
+        feedbackNoProductsOrder.style.display = 'flex';
+    }
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductToOrder);
@@ -752,7 +767,7 @@ buttonCancelOrder.addEventListener('click', cancelOrder);
 buttonCancelOrder.addEventListener('dblclick', returnSectionOrders);
 buttonSaveOrder.addEventListener('click', saveOrder);
 checkboxSelectAllOrders.addEventListener('click', selectAllCheckbox);
-buttonDeleteOrder.addEventListener('click', deleteOrder);
+buttonDeleteOrder.addEventListener('click', openModalDeleteOrder);
 selectChangeType.addEventListener('change', filterOrdersByType);
 selectChangeStatus.addEventListener('change', filterOrdersByStatus);
 buttonPrint.addEventListener('click', printOrders);
