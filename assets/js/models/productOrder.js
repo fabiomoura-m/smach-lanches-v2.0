@@ -8,7 +8,7 @@ export default class ProductOrder {
         this.idProduto = Number.parseInt(idProduto);
         this.nome = nome;
         this.quantidade = Number.parseInt(quantidade);
-        this.valor = parseFloat(valor);
+        this.valor = Number.parseFloat(valor);
     }
 
     editProduct(quantidade) {

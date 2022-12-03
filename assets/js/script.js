@@ -491,12 +491,12 @@ async function filterOrdersByStatus() {
     }
 }
 
-function formatPrice(price) {
-    return price.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-}
+// function formatPrice(price) {
+//     return price.toLocaleString('pt-BR', {
+//         style: 'currency',
+//         currency: 'BRL'
+//     });
+// }
 
 function printOrders() {
     window.print();
@@ -612,7 +612,7 @@ function tableRenderProduct(code, name, price) {
     tdCode.textContent = code;
     tdName.textContent = name;
 
-    tdPrice.textContent = formatPrice(Number(price));
+    tdPrice.textContent = formatPrice(price);
 
     removeButton.addEventListener('click', () => removeProduct(code, name));
     editButton.addEventListener('click', () => {
@@ -673,7 +673,7 @@ async function editProduct(code) {
     fieldCodeNewProduct.value = product[0].id;
     fieldCodeNewProduct.setAttribute('disabled', 'disabled');
     fieldNameNewProduct.value = product[0].nome;
-    fieldPriceNewProduct.value = product[0].preco;
+    fieldPriceNewProduct.value = formatPrice(product[0].preco);
 
     buttonSaveNewProduct.disabled = false;
     buttonCancelNewProduct.style.display = 'flex';
@@ -683,7 +683,13 @@ async function updateProduct(code) {
     const idProduct = fieldCodeNewProduct.value;
     const nameProduct = fieldNameNewProduct.value;
     const priceProduct = fieldPriceNewProduct.value;
-    const newProduct = new Product(idProduct, nameProduct, priceProduct);
+    const priceProductCurrentValue =
+        Number(priceProduct.replace(/\D/g, '')) / 100;
+    const newProduct = new Product(
+        idProduct,
+        nameProduct,
+        priceProductCurrentValue
+    );
 
     try {
         await productService.updateProduct(code, newProduct);
@@ -729,14 +735,14 @@ function maskMoney(e) {
         .join('')
         .padStart(3, '0');
     const digitsFloat = onlyDigits.slice(0, -2) + '.' + onlyDigits.slice(-2);
-    e.target.value = maskCurrency(digitsFloat);
+    e.target.value = formatPrice(digitsFloat);
 }
 
-function maskCurrency(valor, locale = 'pt-BR', currency = 'BRL') {
-    return new Intl.NumberFormat(locale, {
+function formatPrice(price) {
+    return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
-        currency
-    }).format(valor);
+        currency: 'BRL'
+    }).format(price);
 }
 
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
