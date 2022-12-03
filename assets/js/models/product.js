@@ -6,6 +6,6 @@ export default class Product {
     constructor(id, nome, preco) {
         this.id = Number.parseInt(id);
         this.nome = nome;
-        this.preco = Number.parseFloat(preco);
+        this.preco = preco;
     }
 }

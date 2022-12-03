@@ -130,12 +130,14 @@ async function addProductToOrder(e) {
     const nameProduct = fieldNameProduct.value;
     const quantity = fieldAmountProduct.value;
     const priceProduct = fieldPriceProduct.value.replace('R$', '');
+    const priceProductCurrentValue =
+        Number(priceProduct.replace(/\D/g, '')) / 100;
 
     const productOrder = new ProductOrder(
         idProduct,
         nameProduct,
         quantity,
-        priceProduct
+        priceProductCurrentValue
     );
 
     const sameProduct = arrayOrder.find(
@@ -571,7 +573,14 @@ async function saveNewProduct() {
     const idProduct = fieldCodeNewProduct.value;
     const nameProduct = fieldNameNewProduct.value;
     const priceProduct = fieldPriceNewProduct.value;
-    const product = new Product(idProduct, nameProduct, priceProduct);
+    const priceProductCurrentValue =
+        Number(priceProduct.replace(/\D/g, '')) / 100;
+
+    const product = new Product(
+        idProduct,
+        nameProduct,
+        priceProductCurrentValue
+    );
 
     try {
         await productService.saveProduct(product);
@@ -602,6 +611,7 @@ function tableRenderProduct(code, name, price) {
 
     tdCode.textContent = code;
     tdName.textContent = name;
+
     tdPrice.textContent = formatPrice(Number(price));
 
     removeButton.addEventListener('click', () => removeProduct(code, name));
@@ -712,6 +722,23 @@ function closeModals(modal) {
     modal.close();
 }
 
+function maskMoney(e) {
+    const onlyDigits = e.target.value
+        .split('')
+        .filter(s => /\d/.test(s))
+        .join('')
+        .padStart(3, '0');
+    const digitsFloat = onlyDigits.slice(0, -2) + '.' + onlyDigits.slice(-2);
+    e.target.value = maskCurrency(digitsFloat);
+}
+
+function maskCurrency(valor, locale = 'pt-BR', currency = 'BRL') {
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency
+    }).format(valor);
+}
+
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
 buttonSearchProduct.addEventListener('click', searchProduct);
 buttonAddProduct.addEventListener('click', addProductToOrder);
@@ -750,6 +777,7 @@ btnCancelDeleteProduct.addEventListener('click', () => {
 
 linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
+fieldPriceNewProduct.addEventListener('keyup', e => maskMoney(e));
 window.addEventListener('load', () => {
     showCurrentDate();
     activeButtonsNewProduct();
