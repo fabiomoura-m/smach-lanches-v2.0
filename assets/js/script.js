@@ -522,9 +522,9 @@ function returnSectionOrders() {
 
 function showCurrentDate() {
     let currentDate = new Date();
-    let dateFormatted = `${currentDate.getDate()}/${
+    let dateFormatted = `${fixZero(currentDate.getDate())}/${fixZero(
         currentDate.getMonth() + 1
-    }/${currentDate.getFullYear()}`;
+    )}/${currentDate.getFullYear()}`;
 
     date.innerHTML = dateFormatted;
 }
