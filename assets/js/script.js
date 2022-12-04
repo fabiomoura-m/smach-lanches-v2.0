@@ -123,12 +123,16 @@ async function searchProduct(e) {
 
 async function addProductToOrder(e) {
     e.preventDefault();
+    const quantity = fieldAmountProduct.value;
+    if (!quantity || quantity == '0') {
+        return feedbackMessage('Preencha o campo quantidade!');
+    }
+
     buttonSaveOrder.removeAttribute('disabled');
     buttonAddProduct.setAttribute('disabled', 'true');
 
     const idProduct = fieldSearchProduct.value;
     const nameProduct = fieldNameProduct.value;
-    const quantity = fieldAmountProduct.value;
     const priceProduct = fieldPriceProduct.value.replace('R$', '');
     const priceProductCurrentValue =
         Number(priceProduct.replace(/\D/g, '')) / 100;

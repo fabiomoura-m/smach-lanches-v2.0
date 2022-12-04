@@ -129,7 +129,8 @@
                     <div class="container-fields">
                         <div class="field-amount">
                             <label for="">Quantidade</label>
-                            <input type="number" placeholder="0" id="amountProduct" min="1">
+                            <input type="number" placeholder="0" id="amountProduct"
+                                onkeypress="return event.charCode >= 48" min="1">
                         </div>
                         <div class="field-product">
                             <label for="">Produto</label>
