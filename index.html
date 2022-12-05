@@ -86,9 +86,15 @@
                     <dialog id="dialog-delete" class="modal modal-delete">
                         <div>
                             <h2>Deseja realmente excluir o pedido?</h2>
-                            <div>
-                                <button id="btn-modal-confirm" class="close-modal confirm">Sim</button>
-                                <button id="btn-modal-cancel" class="close-modal cancel">Não</button>
+                            <div class="container-buttons">
+                                <button id="btn-modal-cancel" class="button-cancelDeleteOrder">
+                                    <img src="/assets/images/close-new-product.svg" alt="">
+                                    Não, cancelar
+                                </button>
+                                <button id="btn-modal-confirm" class="button-confirmDeleteOrder">
+                                    <img src="/assets/images/most.svg" alt="">
+                                    Sim, excluir
+                                </button>
                             </div>
                         </div>
                     </dialog>
@@ -257,12 +263,7 @@
         Copyright © 2022 M & M Technologies - Todos os direitos reservados
     </footer>
 
-    <!-- <script src="assets/js/products.js"></script> -->
-    <script src="assets/js/script.js" type="module">
-        import { hello } from './test.js'
-
-        document.querySelector('#hello').addEventListener('click', hello)
-    </script>
+    <script src="assets/js/script.js" type="module"> </script>
 </body>
 
 </html>
