@@ -374,8 +374,11 @@ function selectCheckbox() {
     showButtonDelete(checked);
 }
 
-function openModalDeleteOrder() {
+async function openModalDeleteOrder() {
     const messageModal = document.querySelector('#dialog-delete > div h2');
+    const orderCode = document.querySelector('#modal-orderCode');
+
+    orderCode.innerHTML = '';
     let message = 'Deseja realmente excluir o pedido?';
 
     const checkboxs = document.querySelectorAll(
@@ -386,6 +389,10 @@ function openModalDeleteOrder() {
         message = 'Deseja realmente excluir os pedidos?';
     }
     messageModal.textContent = message;
+
+    checkboxs.forEach(checkbox => {
+        orderCode.innerHTML += `<span>${checkbox.id}<span>`;
+    });
 
     modalDeleteOrder.showModal();
 

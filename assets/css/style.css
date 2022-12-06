@@ -92,6 +92,29 @@ main {
     gap: 1rem;
     flex-direction: column;
 }
+.modal-delete > div h2 {
+    font-family: 'Barlow';
+    font-size: 28px;
+    line-height: 79%;
+    color: var(--color-neutral);
+}
+.modal-delete .modal-orderCode {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 18px;
+    line-height: 79%;
+    color: var(--color-neutral-700);
+    margin-block: 24px;
+    min-width: 242px;
+    max-height: 242px;
+    overflow-y: auto;
+    background-color: rgba(179, 179, 179, 0.2);
+    padding: 13px 36px;
+    border-radius: 8px;
+    text-align: center;
+}
+
 .modal .close-modal {
     background-color: var(--color-white);
     display: flex;
