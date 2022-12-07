@@ -6,9 +6,10 @@ import {
     formatPrice,
     maskMoney,
     showCurrentDate,
-    ShowCurrentTime,
-    sumTotalAmountOrder
+    ShowCurrentTime
 } from './utils/utils.js';
+import LoadEvents from './events/index.js';
+import { arrayOrder, tableRenderAllOrders } from './modules/order.js';
 
 const productService = new ProductServices();
 const orderService = new OrderServices();
@@ -27,7 +28,6 @@ const fieldAmountProduct = document.getElementById('amountProduct');
 const feedbackNoProducts = document.getElementById('feedback-order');
 const tBodyProduct = document.getElementById('tBodyProduct');
 
-const buttonCancelOrder = document.getElementById('btn-cancel');
 const buttonSaveOrder = document.getElementById('btn-save');
 const form = document.getElementById('formOrder');
 const containerSetSave = document.getElementById('container-set-save');
@@ -46,7 +46,6 @@ const buttonDeleteOrder = document.getElementById('btn-delete');
 const selectChangeType = document.getElementById('select-filter-type');
 const selectChangeStatus = document.getElementById('select-filter-status');
 
-const buttonPrint = document.getElementById('btn-print');
 const feedbackOrders = document.getElementById('feedback-show-order');
 const messageFeedback = document.getElementById('feedback-message');
 const buttonCloseFeedback = document.getElementById('close-feedback');
@@ -79,11 +78,6 @@ const btnCancelDeleteProduct = document.getElementById(
 
 let currentOperation = 'saveProduct';
 
-let arrayOrder = [];
-let arrayFilteredByType = [];
-let arrayFilteredByStatus = [];
-let checkedAll = false;
-
 function changeSection(e) {
     if (e.target.id == 'btn-newOrder') {
         sectionOrder.style.display = 'none';
@@ -103,425 +97,6 @@ function changeSection(e) {
         sectionOrder.style.display = 'none';
         sectionProducts.style.display = 'block';
     }
-}
-
-async function searchProduct(e) {
-    e.preventDefault();
-    const codeProduct = fieldSearchProduct.value;
-    if (codeProduct) {
-        const productFound = await productService.getProductForId(codeProduct);
-        if (productFound !== undefined) {
-            fieldNameProduct.value = productFound[0].nome;
-            fieldPriceProduct.value = formatPrice(productFound[0].preco);
-            fieldAmountProduct.value = 1;
-            buttonAddProduct.removeAttribute('disabled');
-        } else {
-            fieldNameProduct.value = '';
-            fieldPriceProduct.value = '';
-            fieldAmountProduct.value = 0;
-            buttonAddProduct.setAttribute('disabled', 'true');
-            modalOrder.showModal();
-        }
-    }
-}
-
-async function addProductToOrder(e) {
-    e.preventDefault();
-    const quantity = fieldAmountProduct.value;
-    if (!quantity || quantity == '0') {
-        return feedbackMessage('Preencha o campo quantidade!');
-    }
-
-    buttonSaveOrder.removeAttribute('disabled');
-    buttonAddProduct.setAttribute('disabled', 'true');
-
-    const idProduct = fieldSearchProduct.value;
-    const nameProduct = fieldNameProduct.value;
-    const priceProduct = fieldPriceProduct.value.replace('R$', '');
-    const priceProductCurrentValue =
-        Number(priceProduct.replace(/\D/g, '')) / 100;
-
-    const productOrder = new ProductOrder(
-        idProduct,
-        nameProduct,
-        quantity,
-        priceProductCurrentValue
-    );
-
-    const sameProduct = arrayOrder.find(
-        product => product.idProduto == idProduct
-    );
-
-    if (sameProduct !== undefined) {
-        arrayOrder.forEach(product => {
-            if (product.idProduto == idProduct) {
-                product.editProduct(quantity);
-
-                renderProductsOrder();
-            }
-        });
-    } else {
-        arrayOrder.push(productOrder);
-
-        renderProductsOrder();
-    }
-}
-
-function renderProductsOrder() {
-    let trTds = '';
-    arrayOrder.forEach(product => {
-        trTds += `
-            <tr>
-                <td>${product.idProduto}</td>
-                <td>${product.nome}</td>
-                <td>${product.quantidade}</td>
-                <td>${formatPrice(product.total)}</td>
-            </tr>`;
-    });
-
-    tBodyProduct.innerHTML = trTds;
-    feedbackNoProducts.style.display = 'none';
-    containerTotalOrder.style.display = 'flex';
-    containerSetSave.style.justifyContent = 'space-between';
-    totalAmountOrder.innerHTML = `Total do pedido: <span class="total-order-bold">${formatPrice(
-        sumTotalAmountOrder()
-    )}<span>`;
-    form.reset();
-}
-
-function cancelOrder() {
-    form.reset();
-    buttonSaveOrder.setAttribute('disabled', 'true');
-    buttonAddProduct.setAttribute('disabled', 'true');
-    tBodyProduct.innerHTML = '';
-    feedbackNoProducts.style.display = 'flex';
-    containerTotalOrder.style.display = 'none';
-    containerSetSave.style.justifyContent = 'flex-end';
-    arrayOrder = [];
-}
-
-async function saveOrder() {
-    sectionOrder.style.display = 'block';
-    sectionNewOrder.style.display = 'none';
-
-    let typeRequest = document.querySelector(
-        'input[name="type-request"]:checked'
-    ).value;
-
-    const arrayProductsOrder = arrayOrder.map(product => {
-        return {
-            idProduto: product.idProduto,
-            quantidade: product.quantidade
-        };
-    });
-
-    try {
-        const order = await orderService.saveOrder(
-            arrayProductsOrder,
-            typeRequest
-        );
-        showOrder(order);
-        feedbackNoProductsOrder.style.display = 'none';
-
-        cancelOrder();
-
-        feedbackMessage('O pedido foi recebido.');
-    } catch (err) {
-        feedbackMessage(`${err}.`);
-    }
-}
-
-function showOrder(order) {
-    let trTds = '';
-
-    let statusOrder =
-        order.status == 'Recebido'
-            ? ''
-            : order.status == 'Pronto'
-            ? 'ready'
-            : 'delivered';
-
-    trTds += `
-            <tr>
-                <td>
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" class="checkbox checkbox-order"  id="${
-                            order.id
-                        }">
-                        <label class="checkbox-label order" for="${order.id}">${
-        order.id
-    }</label>
-                    </div>
-                </td>
-                <td>
-                ${order.produtos
-                    .map(
-                        product =>
-                            `${product.quantidade} - ${product.nome} </br>`
-                    )
-                    .join('')}
-                </td>
-                <td>${order.tipo}</td>
-                <td>${formatPrice(order.total)}</td>
-                <td>
-                    <button class="button-order-status ${statusOrder}" order-id="${
-        order.id
-    }" order-status="${order.status}">
-                    ${order.status}
-                    </button>
-                </td>
-            </tr>`;
-
-    tbodyOrders.innerHTML += trTds;
-
-    tableOrderListeners();
-}
-
-function tableOrderListeners() {
-    const buttonsChangeStatus = document.querySelectorAll(
-        '.button-order-status'
-    );
-
-    const checkboxs = document.querySelectorAll('.checkbox-order');
-
-    buttonsChangeStatus.forEach(button => {
-        button.addEventListener('click', () => {
-            const orderID = button.getAttribute('order-id');
-            const orderStatus = button.getAttribute('order-status');
-
-            changeOrderStatus(orderID, orderStatus);
-        });
-    });
-
-    checkboxs.forEach(checkbox => {
-        checkbox.addEventListener('click', () => {
-            selectCheckbox();
-        });
-    });
-}
-
-async function tableRenderAllOrders() {
-    tbodyOrders.innerHTML = '';
-
-    const orders = await orderService.getAllOrders();
-
-    if (orders.length > 0) {
-        orders.forEach(order => showOrder(order));
-        feedbackNoProductsOrder.style.display = 'none';
-    }
-}
-
-async function tableRenderOrdersFiltered(orders) {
-    tbodyOrders.innerHTML = '';
-
-    if (orders.length > 0) {
-        orders.forEach(order => showOrder(order));
-        feedbackNoProductsOrder.style.display = 'none';
-    }
-}
-
-async function changeOrderStatus(id, status) {
-    if (status !== 'Entregue') {
-        try {
-            await orderService.changeStatus(id, status);
-            tableRenderAllOrders();
-        } catch (err) {
-            feedbackMessage(`${err}.`);
-        }
-    }
-}
-
-function showButtonDelete(checked = false) {
-    if (checkedAll || checked) {
-        filterContainer.style.display = 'none';
-        deleteContainer.style.display = 'flex';
-    } else {
-        filterContainer.style.display = 'flex';
-        deleteContainer.style.display = 'none';
-    }
-}
-
-function selectAllCheckbox() {
-    let checkboxs = document.querySelectorAll(
-        'input[type="checkbox"]:not([id=select-all-orders])'
-    );
-
-    checkboxs.forEach(checkbox => {
-        checkbox.checked = checkedAll ? false : true;
-    });
-
-    checkedAll = checkedAll ? false : true;
-
-    if (checkboxs.length > 0) {
-        showButtonDelete();
-    }
-}
-
-function selectCheckbox() {
-    let checked = false;
-
-    let checkboxs = document.querySelectorAll(
-        'input[type="checkbox"]:checked:not([id=select-all-orders])'
-    );
-
-    if (checkboxs.length >= 1) {
-        checked = true;
-    }
-
-    showButtonDelete(checked);
-}
-
-async function openModalDeleteOrder() {
-    const messageModal = document.querySelector('#dialog-delete > div h2');
-    const orderCode = document.querySelector('#modal-orderCode');
-
-    orderCode.innerHTML = '';
-    let message = 'Deseja realmente excluir o pedido?';
-
-    const checkboxs = document.querySelectorAll(
-        'input[type="checkbox"]:checked:not([id=select-all-orders])'
-    );
-
-    if (checkboxs.length > 1) {
-        message = 'Deseja realmente excluir os pedidos?';
-    }
-    messageModal.textContent = message;
-
-    checkboxs.forEach(checkbox => {
-        orderCode.innerHTML += `<span>${checkbox.id}<span>`;
-    });
-
-    modalDeleteOrder.showModal();
-
-    buttonConfirmDelete.addEventListener('click', deleteOrder);
-}
-
-async function deleteOrder() {
-    const checkboxs = document.querySelectorAll(
-        'input[type="checkbox"]:checked:not([id=select-all-orders])'
-    );
-    const checkboxTHead = document.getElementById('select-all-orders');
-
-    if (checkboxs.length > 1) {
-        for (let i = 0; i < checkboxs.length; i++) {
-            const idProduct = checkboxs[i].id;
-            await orderService.deleteOrder(idProduct);
-        }
-
-        await tableRenderAllOrders();
-        feedbackMessage(`Pedidos removidos com sucesso.`);
-    } else {
-        const idProduct = Number(checkboxs[0].id);
-        await orderService.deleteOrder(idProduct);
-        await tableRenderAllOrders();
-        feedbackMessage(`Pedido ${idProduct} removido com sucesso.`);
-    }
-
-    await showFeedbackNoOrders();
-    filterContainer.style.display = 'flex';
-    deleteContainer.style.display = 'none';
-    checkboxTHead.checked = false;
-
-    closeModals(modalDeleteOrder);
-}
-
-async function filterOrdersByType() {
-    let orderType = selectChangeType.value;
-
-    let products = await orderService.getAllOrders();
-
-    if (arrayFilteredByStatus.length > 0) {
-        if (orderType == '') {
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-            arrayFilteredByType = [];
-        } else if (orderType == 'Delivery') {
-            arrayFilteredByType = arrayFilteredByStatus.filter(
-                order => order.tipo == 'Delivery'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByType);
-        } else if (orderType == 'Salão') {
-            arrayFilteredByType = arrayFilteredByStatus.filter(
-                order => order.tipo == 'Salão'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByType);
-        }
-    } else {
-        if (orderType == '') {
-            tableRenderAllOrders();
-            arrayFilteredByType = [];
-        } else if (orderType == 'Delivery') {
-            arrayFilteredByType = products.filter(
-                order => order.tipo == 'Delivery'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByType);
-        } else if (orderType == 'Salão') {
-            arrayFilteredByType = products.filter(
-                order => order.tipo == 'Salão'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByType);
-        }
-    }
-}
-
-async function filterOrdersByStatus() {
-    let orderStatus = selectChangeStatus.value;
-
-    let products = await orderService.getAllOrders();
-
-    if (arrayFilteredByType.length > 0) {
-        if (orderStatus == '') {
-            tableRenderOrdersFiltered(arrayFilteredByType);
-            arrayFilteredByStatus = [];
-        } else if (orderStatus == 'Recebido') {
-            arrayFilteredByStatus = arrayFilteredByType.filter(
-                order => order.status == 'Recebido'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        } else if (orderStatus == 'Pronto') {
-            arrayFilteredByStatus = arrayFilteredByType.filter(
-                order => order.status == 'Pronto'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        } else if (orderStatus == 'Entregue') {
-            arrayFilteredByStatus = arrayFilteredByType.filter(
-                order => order.status == 'Entregue'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        }
-    } else {
-        if (orderStatus == '') {
-            tableRenderAllOrders();
-            arrayFilteredByStatus = [];
-        } else if (orderStatus == 'Recebido') {
-            arrayFilteredByStatus = products.filter(
-                order => order.status == 'Recebido'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        } else if (orderStatus == 'Pronto') {
-            arrayFilteredByStatus = products.filter(
-                order => order.status == 'Pronto'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        } else if (orderStatus == 'Entregue') {
-            arrayFilteredByStatus = products.filter(
-                order => order.status == 'Entregue'
-            );
-            tableRenderOrdersFiltered(arrayFilteredByStatus);
-        }
-    }
-}
-
-function printOrders() {
-    window.print();
-}
-
-function closeFeedback() {
-    feedbackOrders.style.right = '-400px';
-}
-
-function returnSectionOrders() {
-    sectionOrder.style.display = 'block';
-    sectionNewOrder.style.display = 'none';
 }
 
 function checkInputs(inputs) {
@@ -692,61 +267,8 @@ async function updateProduct(code) {
     }
 }
 
-function feedbackMessage(message) {
-    feedbackOrders.style.display = 'flex';
-    setTimeout(() => {
-        messageFeedback.textContent = message;
-        if (document.body.clientWidth < 500) {
-            feedbackOrders.style.right = '5px';
-            feedbackOrders.style.top = '330px';
-        } else if (document.body.clientWidth < 820) {
-            feedbackOrders.style.right = '5px';
-            feedbackOrders.style.top = '55px';
-        } else {
-            feedbackOrders.style.top = '20px';
-            feedbackOrders.style.right = '100px';
-        }
-    }, 800);
-    setTimeout(() => {
-        feedbackOrders.style.right = '-400px';
-        setTimeout(() => {
-            feedbackOrders.style.display = 'none';
-        }, 200);
-    }, 5000);
-}
-
-function closeModals(modal) {
-    modal.close();
-}
-
-async function showFeedbackNoOrders() {
-    const orders = await orderService.getAllOrders();
-
-    if (orders.length > 0) {
-        feedbackNoProductsOrder.style.display = 'none';
-    } else {
-        feedbackNoProductsOrder.style.display = 'flex';
-    }
-}
-
 buttonAddNewOrder.addEventListener('click', e => changeSection(e));
-buttonSearchProduct.addEventListener('click', searchProduct);
-buttonAddProduct.addEventListener('click', addProductToOrder);
-buttonCancelOrder.addEventListener('click', cancelOrder);
-buttonCancelOrder.addEventListener('dblclick', returnSectionOrders);
-buttonSaveOrder.addEventListener('click', saveOrder);
-checkboxSelectAllOrders.addEventListener('click', selectAllCheckbox);
-buttonDeleteOrder.addEventListener('click', openModalDeleteOrder);
-selectChangeType.addEventListener('change', filterOrdersByType);
-selectChangeStatus.addEventListener('change', filterOrdersByStatus);
-buttonPrint.addEventListener('click', printOrders);
-buttonCloseFeedback.addEventListener('click', closeFeedback);
-buttonCloseModal.addEventListener('click', () => {
-    closeModals(modalOrder);
-});
-buttonCancelDelete.addEventListener('click', () => {
-    closeModals(modalDeleteOrder);
-});
+
 buttonCancelNewProduct.addEventListener('click', e => {
     e.preventDefault();
     cancelNewProduct();
@@ -765,7 +287,6 @@ btnCancelDeleteProduct.addEventListener('click', () => {
     closeModals(modalConfirmDeleteProduct);
 });
 
-linkOrder.addEventListener('click', e => changeSection(e));
 linkProduct.addEventListener('click', e => changeSection(e));
 fieldPriceNewProduct.addEventListener('keyup', e => maskMoney(e));
 window.addEventListener('load', () => {
@@ -774,5 +295,6 @@ window.addEventListener('load', () => {
     ShowCurrentTime();
     tableRenderAllProducts();
     tableRenderAllOrders();
+    LoadEvents();
     setInterval(ShowCurrentTime, 1000);
 });
