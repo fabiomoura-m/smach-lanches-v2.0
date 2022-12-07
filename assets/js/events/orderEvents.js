@@ -9,7 +9,7 @@ import {
     printOrders,
     filterOrdersByStatus,
     filterOrdersByType
-} from '../modules/order.js';
+} from '../modules/order.mjs';
 import { closeModals } from '../utils/utils.js';
 
 export function LoadEvents() {

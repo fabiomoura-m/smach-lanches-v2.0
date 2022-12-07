@@ -9,7 +9,7 @@ import {
     ShowCurrentTime
 } from './utils/utils.js';
 import LoadEvents from './events/index.js';
-import { arrayOrder, tableRenderAllOrders } from './modules/order.js';
+import { tableRenderAllOrders } from './renders/orderRenders.js';
 
 const productService = new ProductServices();
 const orderService = new OrderServices();
