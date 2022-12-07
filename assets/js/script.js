@@ -2,6 +2,13 @@ import Product from './models/product.js';
 import ProductServices from './services/product-service.js';
 import ProductOrder from './models/productOrder.js';
 import OrderServices from './services/order-service.js';
+import {
+    formatPrice,
+    maskMoney,
+    showCurrentDate,
+    ShowCurrentTime,
+    sumTotalAmountOrder
+} from './utils/utils.js';
 
 const productService = new ProductServices();
 const orderService = new OrderServices();
@@ -49,9 +56,6 @@ const buttonCloseModal = document.getElementById('btn-close-modal-order');
 const modalDeleteOrder = document.getElementById('dialog-delete');
 const buttonCancelDelete = document.getElementById('btn-modal-cancel');
 const buttonConfirmDelete = document.getElementById('btn-modal-confirm');
-
-const date = document.getElementById('date');
-const time = document.getElementById('hour');
 
 const sectionProducts = document.getElementById('products');
 const linkOrder = document.getElementById('order');
@@ -183,13 +187,6 @@ function renderProductsOrder() {
         sumTotalAmountOrder()
     )}<span>`;
     form.reset();
-}
-
-function sumTotalAmountOrder() {
-    const total = arrayOrder.reduce((current, product) => {
-        return current + product.quantidade * product.valor;
-    }, 0);
-    return total;
 }
 
 function cancelOrder() {
@@ -527,28 +524,6 @@ function returnSectionOrders() {
     sectionNewOrder.style.display = 'none';
 }
 
-function showCurrentDate() {
-    let currentDate = new Date();
-    let dateFormatted = `${fixZero(currentDate.getDate())}/${fixZero(
-        currentDate.getMonth() + 1
-    )}/${currentDate.getFullYear()}`;
-
-    date.innerHTML = dateFormatted;
-}
-
-function ShowCurrentTime() {
-    let currentDate = new Date();
-    let hour = currentDate.getHours();
-    let minute = currentDate.getMinutes();
-    let second = currentDate.getSeconds();
-
-    time.innerHTML = `- ${fixZero(hour)}:${fixZero(minute)}:${fixZero(second)}`;
-}
-
-function fixZero(time) {
-    return time < 10 ? `0${time}` : time;
-}
-
 function checkInputs(inputs) {
     let filled = true;
 
@@ -742,23 +717,6 @@ function feedbackMessage(message) {
 
 function closeModals(modal) {
     modal.close();
-}
-
-function maskMoney(e) {
-    const onlyDigits = e.target.value
-        .split('')
-        .filter(s => /\d/.test(s))
-        .join('')
-        .padStart(3, '0');
-    const digitsFloat = onlyDigits.slice(0, -2) + '.' + onlyDigits.slice(-2);
-    e.target.value = formatPrice(digitsFloat);
-}
-
-function formatPrice(price) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(price);
 }
 
 async function showFeedbackNoOrders() {
