@@ -2,7 +2,8 @@ import {
     cancelNewProduct,
     currentOperation,
     saveNewProduct,
-    updateProduct
+    updateProduct,
+    activeButtonsNewProduct
 } from '../modules/product.mjs';
 import { closeModals, maskMoney } from '../utils/utils.js';
 
@@ -16,6 +17,8 @@ export function LoadEvents() {
     );
     const modalConfirmDeleteProduct = document.getElementById('dialog-product');
     const fieldPriceNewProduct = document.getElementById('priceNewProduct');
+    const inputsSectionNewProduct =
+        document.querySelectorAll('.input-newProduct');
 
     buttonCancelNewProduct.addEventListener('click', e => {
         e.preventDefault();
@@ -36,4 +39,9 @@ export function LoadEvents() {
         closeModals(modalConfirmDeleteProduct);
     });
     fieldPriceNewProduct.addEventListener('keyup', e => maskMoney(e));
+    inputsSectionNewProduct.forEach(input => {
+        input.addEventListener('keyup', () => {
+            activeButtonsNewProduct();
+        });
+    });
 }

@@ -21,24 +21,20 @@ function checkInputs(inputs) {
 }
 
 function activeButtonsNewProduct() {
-    const inputsSectionNewProduct =
-        document.querySelectorAll('.input-newProduct');
     const buttonSaveNewProduct = document.getElementById('btn-addNewProduct');
     const buttonCancelNewProduct = document.getElementById(
         'btn-cancelNewProduct'
     );
+    const inputsSectionNewProduct =
+        document.querySelectorAll('.input-newProduct');
 
-    inputsSectionNewProduct.forEach(input => {
-        input.addEventListener('keyup', () => {
-            if (checkInputs(inputsSectionNewProduct)) {
-                buttonSaveNewProduct.disabled = false;
-                buttonCancelNewProduct.style.display = 'flex';
-            } else {
-                buttonSaveNewProduct.disabled = true;
-                buttonCancelNewProduct.style.display = 'none';
-            }
-        });
-    });
+    if (checkInputs(inputsSectionNewProduct)) {
+        buttonSaveNewProduct.disabled = false;
+        buttonCancelNewProduct.style.display = 'flex';
+    } else {
+        buttonSaveNewProduct.disabled = true;
+        buttonCancelNewProduct.style.display = 'none';
+    }
 }
 
 async function cancelNewProduct() {
