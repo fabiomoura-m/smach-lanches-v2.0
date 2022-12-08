@@ -1,6 +1,5 @@
 import {
     cancelOrder,
-    returnSectionOrders,
     searchProduct,
     addProductToOrder,
     saveOrder,
@@ -25,10 +24,8 @@ export function LoadEvents() {
     const modalDeleteOrder = document.getElementById('dialog-delete');
     const selectChangeType = document.getElementById('select-filter-type');
     const selectChangeStatus = document.getElementById('select-filter-status');
-    const linkOrder = document.getElementById('order');
 
     buttonCancelOrder.addEventListener('click', cancelOrder);
-    buttonCancelOrder.addEventListener('dblclick', returnSectionOrders);
     buttonSearchProduct.addEventListener('click', searchProduct);
     buttonAddProduct.addEventListener('click', addProductToOrder);
     buttonSaveOrder.addEventListener('click', saveOrder);
@@ -40,5 +37,4 @@ export function LoadEvents() {
     });
     selectChangeType.addEventListener('change', filterOrdersByType);
     selectChangeStatus.addEventListener('change', filterOrdersByStatus);
-    linkOrder.addEventListener('click', e => changeSection(e));
 }

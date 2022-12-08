@@ -26,7 +26,7 @@ export function LoadEvents() {
         const fieldCodeNewProduct = document.getElementById('codeNewProduct');
         const idProduct = fieldCodeNewProduct.value;
 
-        if (currentOperation == 'editProduct') {
+        if (currentOperation.operation == 'editProduct') {
             updateProduct(idProduct);
         } else {
             saveNewProduct();
