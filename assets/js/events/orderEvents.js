@@ -9,7 +9,7 @@ import {
     filterOrdersByStatus,
     filterOrdersByType
 } from '../modules/order.mjs';
-import { closeModals } from '../utils/utils.js';
+import { closeModals } from '../utils/index.js';
 
 export function LoadEvents() {
     const buttonCancelOrder = document.getElementById('btn-cancel');

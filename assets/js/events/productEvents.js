@@ -5,7 +5,7 @@ import {
     updateProduct,
     activeButtonsNewProduct
 } from '../modules/product.mjs';
-import { closeModals, maskMoney } from '../utils/utils.js';
+import { closeModals, maskMoney } from '../utils/index.js';
 
 export function LoadEvents() {
     const buttonCancelNewProduct = document.getElementById(

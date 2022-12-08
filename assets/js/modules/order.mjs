@@ -1,8 +1,7 @@
 import ProductServices from '../api-services/product-service.js';
 import OrderServices from '../api-services/order-service.js';
-import { formatPrice } from '../utils/utils.js';
 import ProductOrder from '../models/productOrder.js';
-import { feedbackMessage, closeModals } from '../utils/utils.js';
+import { feedbackMessage, closeModals, formatPrice } from '../utils/index.js';
 import {
     tableRenderProductsOrder,
     tableRenderOrder,

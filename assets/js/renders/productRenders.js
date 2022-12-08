@@ -1,4 +1,4 @@
-import { formatPrice } from '../utils/utils.js';
+import { formatPrice } from '../utils/index.js';
 import {
     removeProduct,
     editProduct,

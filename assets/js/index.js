@@ -1,4 +1,4 @@
-import { showCurrentDate, ShowCurrentTime } from './utils/utils.js';
+import { showCurrentDate, ShowCurrentTime } from './utils/index.js';
 import LoadEvents from './events/index.js';
 import { tableRenderAllOrders } from './renders/orderRenders.js';
 import { tableRenderAllProducts } from './renders/productRenders.js';

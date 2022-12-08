@@ -1,5 +1,5 @@
 import { LoadEvents as LoadOrdersEvents } from './orderEvents.js';
-import { LoadEvents as LoadFeedbackEvents } from './feedbackEvents.js';
+import { LoadEvents as LoadFeedbackEvents } from './notifyEvents.js';
 import { LoadEvents as LoadProductEvents } from './productEvents.js';
 import { LoadEvents as LoadNavigationEvents } from './navigationEvents.js';
 

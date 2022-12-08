@@ -1,4 +1,4 @@
-import { closeModals } from '../utils/utils.js';
+import { closeModals } from '../utils/index.js';
 function closeFeedback() {
     const feedbackOrders = document.getElementById('feedback-show-order');
     feedbackOrders.style.right = '-400px';
