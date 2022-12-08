@@ -1,6 +1,7 @@
 import ProductService from '../api-services/product-service.js';
 import { formatPrice, feedbackMessage } from '../utils/utils.js';
 import Product from '../models/product.js';
+import { tableRenderAllProducts } from '../renders/productRenders.js';
 
 let currentOperation = {
     operation: 'saveProduct'

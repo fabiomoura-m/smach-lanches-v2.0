@@ -4,6 +4,9 @@ import {
     editProduct,
     currentOperation
 } from '../modules/product.mjs';
+import ProductServices from '../api-services/product-service.js';
+
+const productService = new ProductServices();
 
 function tableRenderProduct(code, name, price) {
     const tableBodyNewProducts = document.getElementById('tBodyNewProduct');
