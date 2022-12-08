@@ -4,8 +4,8 @@ import {
     tableOrderListeners
 } from '../modules/order.mjs';
 import { formatPrice } from '../utils/utils.js';
+import OrderServices from '../api-services/order-service.js';
 
-import OrderServices from '../services/order-service.js';
 const orderService = new OrderServices();
 
 function tableRenderProductsOrder() {

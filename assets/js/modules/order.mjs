@@ -1,5 +1,5 @@
-import ProductServices from '../services/product-service.js';
-import OrderServices from '../services/order-service.js';
+import ProductServices from '../api-services/product-service.js';
+import OrderServices from '../api-services/order-service.js';
 import { formatPrice } from '../utils/utils.js';
 import ProductOrder from '../models/productOrder.js';
 import { feedbackMessage, closeModals } from '../utils/utils.js';
@@ -35,13 +35,6 @@ function cancelOrder() {
     containerTotalOrder.style.display = 'none';
     containerSetSave.style.justifyContent = 'flex-end';
     arrayOrder = [];
-}
-
-function returnSectionOrders() {
-    const sectionOrder = document.getElementById('orders');
-    const sectionNewOrder = document.getElementById('new-order');
-    sectionOrder.style.display = 'block';
-    sectionNewOrder.style.display = 'none';
 }
 
 async function searchProduct(e) {
@@ -404,7 +397,6 @@ function printOrders() {
 
 export {
     cancelOrder,
-    returnSectionOrders,
     searchProduct,
     arrayOrder,
     sumTotalAmountOrder,
